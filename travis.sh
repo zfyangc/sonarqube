@@ -193,7 +193,6 @@ BUILD)
     mvn install $MAVEN_ARGS -Dsource.skip=true
   fi
 
-  ./run-integration-tests.sh "Lite" ""
   ;;
 
 WEB_TESTS)
