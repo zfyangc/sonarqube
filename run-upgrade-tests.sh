@@ -13,6 +13,9 @@ set -euo pipefail
 ORCHESTRATOR_CONFIG_URL=$1
 shift 1
 
+export JAVA_HOME=/opt/sonarsource/jvm/java-1.9.0-sun-x64
+export PATH=$JAVA_HOME/bin:$PATH
+
 cd tests
 mvn verify \
   -Pwith-db-drivers \

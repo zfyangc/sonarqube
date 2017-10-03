@@ -19,6 +19,9 @@ shift 2
 cd tests/plugins
 mvn clean package -B -e -V
 
+export JAVA_HOME=/opt/sonarsource/jvm/java-1.9.0-sun-x64
+export PATH=$JAVA_HOME/bin:$PATH
+
 cd ..
 mvn verify \
   -Dcategory=$CATEGORY \
