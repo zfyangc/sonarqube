@@ -149,7 +149,6 @@ public class PluginsTest {
     installPlugin(builder, "scmsvn");
     installPlugin(builder, "scmtfvc");
     installPlugin(builder, "softvis3d");
-    installPlugin(builder, "sonargraphintegration");
     installPlugin(builder, "status");
     installPlugin(builder, "swift");
     // SONAR-7618 Visual Basic 2.2 not compatible with CE not loading @ServerSide
