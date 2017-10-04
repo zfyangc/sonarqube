@@ -147,7 +147,7 @@ BUILD)
           -Dsonar.login=$SONAR_TOKEN \
           -Dsonar.projectVersion=$INITIAL_VERSION
 
-  elif [[ "$TRAVIS_BRANCH" == "branch-"* ]] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+  elif [[ "$TRAVIS_BRANCH" == "experimental-java9" ]] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     echo 'Build release branch'
 
     mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy \
