@@ -26,10 +26,6 @@ RUN_ACTIVITY:
   - run-db-integration-tests-postgresql93-Category4
   - run-db-integration-tests-postgresql93-Category5
   - run-db-integration-tests-postgresql93-Category6
-  - run-upgrade-tests-mysql56
-  - run-upgrade-tests-mssql2014
-  - run-upgrade-tests-oracle12c
-  - run-upgrade-tests-postgresql93
   - run-it-released-plugins
   - run-perf-tests
 
@@ -81,14 +77,6 @@ exclude:
   - RUN_ACTIVITY: run-db-integration-tests-postgresql93-Category5
     SLAVE_TYPE: performance
   - RUN_ACTIVITY: run-db-integration-tests-postgresql93-Category6
-    SLAVE_TYPE: performance
-  - RUN_ACTIVITY: run-upgrade-tests-mysql56
-    SLAVE_TYPE: performance
-  - RUN_ACTIVITY: run-upgrade-tests-mssql2014
-    SLAVE_TYPE: performance
-  - RUN_ACTIVITY: run-upgrade-tests-oracle12c
-    SLAVE_TYPE: performance
-  - RUN_ACTIVITY: run-upgrade-tests-postgresql93
     SLAVE_TYPE: performance
   - RUN_ACTIVITY: run-it-released-plugins
     SLAVE_TYPE: performance
@@ -145,14 +133,6 @@ exclude:
   - RUN_ACTIVITY: run-db-integration-tests-postgresql93-Category5
     SLAVE_TYPE: windows
   - RUN_ACTIVITY: run-db-integration-tests-postgresql93-Category6
-    SLAVE_TYPE: windows
-  - RUN_ACTIVITY: run-upgrade-tests-mysql56
-    SLAVE_TYPE: windows
-  - RUN_ACTIVITY: run-upgrade-tests-mssql2014
-    SLAVE_TYPE: windows
-  - RUN_ACTIVITY: run-upgrade-tests-oracle12c
-    SLAVE_TYPE: windows
-  - RUN_ACTIVITY: run-upgrade-tests-postgresql93
     SLAVE_TYPE: windows
   - RUN_ACTIVITY: run-perf-tests
     SLAVE_TYPE: windows
