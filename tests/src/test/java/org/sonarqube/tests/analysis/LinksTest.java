@@ -67,7 +67,8 @@ public class LinksTest {
   public void shouldUseLinkPropertiesOverPomLinksInMaven() {
     MavenBuild build = MavenBuild.create(ItUtils.projectPom("analysis/links-project"))
       .setCleanPackageSonarGoals()
-      .setProperty("sonar.scm.disabled", "true");
+      .setProperty("sonar.scm.disabled", "true")
+      .setProperty("sonar.exclusions", "pom.xml");
     orchestrator.executeBuild(build);
 
     verifyLinks();

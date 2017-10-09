@@ -42,7 +42,8 @@ public class ExtensionLifecycleTest {
     MavenBuild build = MavenBuild.create(ItUtils.projectPom("analysis/extension-lifecycle"))
       .setCleanSonarGoals()
       .setProperty("extension.lifecycle", "true")
-      .setProperty("sonar.dynamicAnalysis", "false");
+      .setProperty("sonar.dynamicAnalysis", "false")
+      .setProperty("sonar.exclusions", "pom.xml,**/pom.xml");
 
     // Build fails if the extensions provided in the extension-lifecycle-plugin are not correctly
     // managed.
