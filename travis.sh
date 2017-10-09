@@ -148,17 +148,11 @@ BUILD)
           -Dsonar.projectVersion=$INITIAL_VERSION
 
   elif [[ "$TRAVIS_BRANCH" == "experimental-java9" ]] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    echo 'Build release branch'
+    echo 'Build experimental-java9 branch'
 
     mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy \
         $MAVEN_ARGS \
         -Pdeploy-sonarsource,release
-
-    mvn sonar:sonar \
-        -Dsonar.host.url=$SONAR_HOST_URL \
-        -Dsonar.login=$SONAR_TOKEN \
-        -Dsonar.branch.name=$TRAVIS_BRANCH \
-        -Dsonar.projectVersion=$INITIAL_VERSION
 
   elif [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN:-}" ]; then
     echo 'Build and analyze internal pull request'
