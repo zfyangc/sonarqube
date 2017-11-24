@@ -21,12 +21,10 @@ package org.sonar.db.purge;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.db.DbSession;
-
-import static com.google.common.collect.FluentIterable.from;
-import static java.util.Arrays.asList;
 
 class PurgeCommands {
 
@@ -84,9 +82,10 @@ class PurgeCommands {
   }
 
   void deleteAnalyses(PurgeSnapshotQuery... queries) {
-    List<IdUuidPair> snapshotIds = from(asList(queries))
-      .transformAndConcat(purgeMapper::selectAnalysisIdsAndUuids)
-      .toList();
+    List<IdUuidPair> snapshotIds = Arrays.stream(queries)
+      .flatMap(q -> purgeMapper.selectAnalysisIdsAndUuids(q).stream())
+      .collect(Collectors.toList());
+
     deleteAnalyses(snapshotIds);
   }
 
