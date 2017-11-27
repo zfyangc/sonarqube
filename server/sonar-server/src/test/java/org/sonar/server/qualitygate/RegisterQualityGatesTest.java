@@ -74,7 +74,7 @@ public class RegisterQualityGatesTest {
   private QualityGateUpdater qualityGateUpdater = new QualityGateUpdater(dbClient);
   private QualityGateFinder qualityGateFinder = new QualityGateFinder(dbClient);
 
-  private RegisterQualityGates underTest = new RegisterQualityGates(dbClient, qualityGateUpdater, qualityGateConditionsUpdater, qualityGateFinder);
+  private RegisterQualityGates underTest = new RegisterQualityGates(dbClient, qualityGateUpdater, qualityGateConditionsUpdater, qualityGateFinder, System2.INSTANCE);
 
   @Before
   public void setup() {
@@ -229,9 +229,10 @@ public class RegisterQualityGatesTest {
   }
 
   @Test
-  public void ensure_only_that_builtin_is_set_as_default_when_no_default_quality_gate() {
+  public void ensure_that_builtin_is_set_as_default_when_no_default_quality_gate() {
     QualityGateDto builtin = new QualityGateDto().setName(BUILT_IN_NAME).setBuiltIn(true);
     qualityGateDao.insert(dbSession, builtin);
+    qualityGateDao.insert(dbSession, new QualityGateDto().setName("Whatever").setBuiltIn(false));
     dbSession.commit();
 
     underTest.start();
@@ -242,6 +243,44 @@ public class RegisterQualityGatesTest {
     assertThat(
       logTester.logs(LoggerLevel.INFO).contains("Built-in quality gate [Sonar way] has been set as default")
     ).isTrue();
+  }
+
+  @Test
+  public void ensure_that_builtin_is_set_as_default_when_default_quality_gate_is_incorrectly() {
+    QualityGateDto builtin = new QualityGateDto().setName(BUILT_IN_NAME).setBuiltIn(true);
+    qualityGateDao.insert(dbSession, builtin);
+    QualityGateDto fakeQualityGate = new QualityGateDto().setName("Whatever");
+    qualityGateDao.insert(dbSession, fakeQualityGate);
+    qualityGateUpdater.setDefault(dbSession, fakeQualityGate);
+    qualityGateDao.delete(fakeQualityGate, dbSession);
+    dbSession.commit();
+
+    underTest.start();
+
+    assertThat(qualityGateFinder.getDefault(dbSession)).isPresent();
+    assertThat(qualityGateFinder.getDefault(dbSession).get().getId()).isEqualTo(builtin.getId());
+
+    assertThat(
+      logTester.logs(LoggerLevel.INFO).contains("Built-in quality gate [Sonar way] has been set as default")
+    ).isTrue();
+  }
+
+  @Test
+  public void ensure_that_default_quality_gate_is_not_overwritten() {
+    QualityGateDto builtin = new QualityGateDto().setName(BUILT_IN_NAME).setBuiltIn(true);
+    qualityGateDao.insert(dbSession, builtin);
+    QualityGateDto defaultQualityGate = qualityGateDao.insert(dbSession, new QualityGateDto().setName("Whatever").setBuiltIn(false));
+    qualityGateUpdater.setDefault(dbSession, defaultQualityGate);
+    dbSession.commit();
+
+    underTest.start();
+
+    assertThat(qualityGateFinder.getDefault(dbSession)).isPresent();
+    assertThat(qualityGateFinder.getDefault(dbSession).get().getId()).isEqualTo(defaultQualityGate.getId());
+
+    assertThat(
+      logTester.logs(LoggerLevel.INFO).contains("Built-in quality gate [Sonar way] has been set as default")
+    ).isFalse();
   }
 
   @Test
@@ -285,6 +324,7 @@ public class RegisterQualityGatesTest {
 
     QualityGateDto qualityGateDto = qualityGateDao.selectByName(dbSession, BUILT_IN_NAME);
     assertThat(qualityGateDto).isNotNull();
+    assertThat(qualityGateDto.getCreatedAt()).isNotNull();
     assertThat(qualityGateDto.isBuiltIn()).isTrue();
     assertThat(gateConditionDao.selectForQualityGate(dbSession, qualityGateDto.getId()))
       .extracting(QualityGateConditionDto::getMetricId, QualityGateConditionDto::getOperator, QualityGateConditionDto::getWarningThreshold,

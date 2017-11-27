@@ -20,12 +20,14 @@
 package org.sonar.server.qualitygate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.picocontainer.Startable;
+import org.sonar.api.utils.System2;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.core.util.stream.MoreCollectors;
@@ -70,15 +72,17 @@ public class RegisterQualityGates implements Startable {
   private final QualityGateUpdater qualityGateUpdater;
   private final QualityGateDao qualityGateDao;
   private final QualityGateConditionDao qualityGateConditionDao;
+  private final System2 system2;
 
   public RegisterQualityGates(DbClient dbClient, QualityGateUpdater qualityGateUpdater,
-    QualityGateConditionsUpdater qualityGateConditionsUpdater, QualityGateFinder qualityGateFinder) {
+    QualityGateConditionsUpdater qualityGateConditionsUpdater, QualityGateFinder qualityGateFinder, System2 system2) {
     this.dbClient = dbClient;
     this.qualityGateConditionsUpdater = qualityGateConditionsUpdater;
     this.qualityGateUpdater = qualityGateUpdater;
     this.qualityGateFinder = qualityGateFinder;
     this.qualityGateDao = dbClient.qualityGateDao();
     this.qualityGateConditionDao = dbClient.gateConditionDao();
+    this.system2 = system2;
   }
 
   @Override
@@ -152,7 +156,8 @@ public class RegisterQualityGates implements Startable {
   private QualityGateDto createQualityGate(DbSession dbSession, String name) {
     QualityGateDto qualityGate = new QualityGateDto()
       .setName(name)
-      .setBuiltIn(true);
+      .setBuiltIn(true)
+      .setCreatedAt(new Date(system2.now()));
     return dbClient.qualityGateDao().insert(dbSession, qualityGate);
   }
 
