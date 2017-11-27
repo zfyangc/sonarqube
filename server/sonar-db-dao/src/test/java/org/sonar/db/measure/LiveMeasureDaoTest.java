@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.api.utils.System2;
 import org.sonar.db.DbTester;
+import org.sonar.db.metric.MetricDto;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,5 +72,25 @@ public class LiveMeasureDaoTest {
     List<LiveMeasureDto> selected = underTest.selectByComponentUuids(db.getSession(), asList("_missing_"), asList(measure.getMetricId()));
 
     assertThat(selected).isEmpty();
+  }
+
+  @Test
+  public void test_selectMeasure() {
+    MetricDto metric = db.measures().insertMetric();
+    LiveMeasureDto stored = MeasureTesting.newLiveMeasure().setMetricId(metric.getId());
+    underTest.insert(db.getSession(), stored);
+
+    // metric exists but not component
+    assertThat(underTest.selectMeasure(db.getSession(), "_missing_", metric.getKey())).isEmpty();
+
+    // component exists but not metric
+    assertThat(underTest.selectMeasure(db.getSession(), stored.getComponentUuid(), "_missing_")).isEmpty();
+
+    // component and metric don't match
+    assertThat(underTest.selectMeasure(db.getSession(), "_missing_", "_missing_")).isEmpty();
+
+    // matches
+    assertThat(underTest.selectMeasure(db.getSession(), stored.getComponentUuid(), metric.getKey()).get())
+      .isEqualToComparingFieldByField(stored);
   }
 }

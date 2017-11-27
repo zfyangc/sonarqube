@@ -25,9 +25,13 @@ import org.apache.ibatis.annotations.Param;
 
 public interface LiveMeasureMapper {
 
-  List<LiveMeasureDto> selectByComponentUuids(
+  List<LiveMeasureDto> selectByComponentUuidsAndMetricIds(
     @Param("componentUuids") List<String> componentUuids,
     @Param("metricIds") Collection<Integer> metricIds);
+
+  List<LiveMeasureDto> selectByComponentUuidsAndMetricKeys(
+    @Param("componentUuids") List<String> componentUuids,
+    @Param("metricKeys") Collection<String> metricKeys);
 
   void insert(
     @Param("dto") LiveMeasureDto dto,

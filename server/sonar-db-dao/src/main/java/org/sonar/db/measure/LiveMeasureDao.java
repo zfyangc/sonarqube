@@ -22,11 +22,13 @@ package org.sonar.db.measure;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.api.utils.System2;
 import org.sonar.core.util.Uuids;
 import org.sonar.db.Dao;
 import org.sonar.db.DbSession;
 
+import static java.util.Collections.singletonList;
 import static org.sonar.db.DatabaseUtils.executeLargeInputs;
 
 public class LiveMeasureDao implements Dao {
@@ -44,7 +46,26 @@ public class LiveMeasureDao implements Dao {
 
     return executeLargeInputs(
       largeComponentUuids,
-      componentUuids -> mapper(dbSession).selectByComponentUuids(componentUuids, metricIds));
+      componentUuids -> mapper(dbSession).selectByComponentUuidsAndMetricIds(componentUuids, metricIds));
+  }
+
+  public List<LiveMeasureDto> selectByComponentUuidsAndMetricKeys(DbSession dbSession, Collection<String> largeComponentUuids, Collection<String> metricKeys) {
+    if (largeComponentUuids.isEmpty() || metricKeys.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    return executeLargeInputs(
+      largeComponentUuids,
+      componentUuids -> mapper(dbSession).selectByComponentUuidsAndMetricKeys(componentUuids, metricKeys));
+  }
+
+  public Optional<LiveMeasureDto> selectMeasure(DbSession dbSession, String componentUuid, String metricKey) {
+    List<LiveMeasureDto> measures = selectByComponentUuidsAndMetricKeys(dbSession, singletonList(componentUuid), singletonList(metricKey));
+    // couple of columns [component_uuid, metric_id] is unique. List can't have more than 1 item.
+    if (measures.size() == 1) {
+      return Optional.of(measures.get(0));
+    }
+    return Optional.empty();
   }
 
   public void insert(DbSession dbSession, LiveMeasureDto dto) {
