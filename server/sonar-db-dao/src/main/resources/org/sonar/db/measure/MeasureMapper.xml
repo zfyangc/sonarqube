@@ -16,11 +16,6 @@
     pm.variation_value_1 as variation
   </sql>
 
-  <sql id="extendedMeasureColumns">
-    <include refid="measureColumns"/>,
-    metric.name as metricKey
-  </sql>
-
   <select id="selectByQueryOnProjects" parameterType="map" resultType="Measure">
     select <include refid="measureColumns"/> from project_measures pm
     <include refid="selectByQueryCommonJoins"/>
@@ -150,24 +145,6 @@
     and pm.metric_id in <foreach item="metricId" collection="query.metricIds" open="(" separator="," close=")">#{metricId, jdbcType=VARCHAR}</foreach>
     and pm.person_id is null
     and analysis.status=#{query.status, jdbcType=VARCHAR}
-  </select>
-
-  <select id="selectProjectMeasuresOfDeveloper" parameterType="map" resultType="Measure">
-    SELECT
-      <include refid="measureColumns"/>
-    from
-      project_measures pm, snapshots s, projects p
-    where
-      pm.person_id=#{developerId,jdbcType=BIGINT}
-      and pm.metric_id in
-        <foreach item="metricId" collection="metricIds" open="(" separator="," close=")">
-          #{metricId}
-        </foreach>
-      and s.uuid=pm.analysis_uuid
-      and s.islast=${_true}
-      and p.uuid=pm.component_uuid
-      and p.scope='PRJ'
-      and p.qualifier='TRK'
   </select>
 
   <select id="selectByComponentsAndMetrics" parameterType="map" resultType="Measure">

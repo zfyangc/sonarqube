@@ -41,8 +41,6 @@ public interface MeasureMapper {
 
   List<MeasureDto> selectPastMeasuresOnSeveralAnalyses(@Param("query") PastMeasureQuery query);
 
-  List<MeasureDto> selectProjectMeasuresOfDeveloper(@Param("developerId") long developerId, @Param("metricIds") Collection<Integer> metricIds);
-
   List<MeasureDto> selectByComponentsAndMetrics(@Param("componentUuids") List<String> componentUuids, @Param("metricIds") Collection<Integer> metricIds);
 
   void insert(MeasureDto measureDto);

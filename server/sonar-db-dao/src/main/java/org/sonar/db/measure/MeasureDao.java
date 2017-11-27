@@ -107,15 +107,6 @@ public class MeasureDao implements Dao {
     return mapper(dbSession).selectPastMeasuresOnSeveralAnalyses(query);
   }
 
-  /**
-   * Used by developer cockpit.
-   */
-  public List<MeasureDto> selectProjectMeasuresOfDeveloper(DbSession dbSession, long developerId, Collection<Integer> metricIds) {
-    return executeLargeInputs(
-      metricIds,
-      ids -> mapper(dbSession).selectProjectMeasuresOfDeveloper(developerId, metricIds));
-  }
-
   public List<MeasureDto> selectByComponentsAndMetrics(DbSession dbSession, Collection<String> componentUuids, Collection<Integer> metricIds) {
     return executeLargeInputs(componentUuids, partitionComponentUuids -> mapper(dbSession).selectByComponentsAndMetrics(partitionComponentUuids, metricIds));
   }
