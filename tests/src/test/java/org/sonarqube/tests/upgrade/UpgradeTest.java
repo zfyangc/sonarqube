@@ -29,14 +29,17 @@ import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.version.Version;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
+import java.net.URLEncoder;
 import java.util.Collections;
 import org.apache.commons.io.IOUtils;
+import org.assertj.core.groups.Tuple;
 import org.junit.After;
 import org.junit.Test;
 import org.sonar.wsclient.services.ResourceQuery;
+import org.sonarqube.ws.WsMeasures;
 import org.sonarqube.ws.WsMeasures.Measure;
 import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.HttpConnector;
@@ -45,14 +48,18 @@ import org.sonarqube.ws.client.WsClientFactories;
 import org.sonarqube.ws.client.WsResponse;
 import org.sonarqube.ws.client.measure.ComponentWsRequest;
 
-import static com.codeborne.selenide.Condition.hasText;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static java.lang.Integer.parseInt;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UpgradeTest {
 
   private static final String PROJECT_KEY = "org.apache.struts:struts-parent";
+  private static final String MODULE_KEY = "org.apache.struts:struts-core";
+  private static final String FILE_KEY = "org.apache.struts:struts-core:src/main/java/org/apache/struts/chain/commands/generic/WrappingLookupCommand.java";
   private static final String LATEST_JAVA_RELEASE = "LATEST_RELEASE";
   private static final Version VERSION_5_2 = Version.create("5.2");
   private static final Version VERSION_5_6_1 = Version.create("5.6.1");
@@ -69,43 +76,44 @@ public class UpgradeTest {
   }
 
   @Test
-  public void test_upgrade_from_5_6_1() {
+  public void test_upgrade_from_5_6_1() throws Exception {
     testDatabaseUpgrade(VERSION_5_6_1);
   }
 
   @Test
-  public void test_upgrade_from_5_2_via_5_6_1() {
+  public void test_upgrade_from_5_2_via_5_6_1() throws Exception {
     testDatabaseUpgrade(VERSION_5_2, VERSION_5_6_1);
   }
 
-  private void testDatabaseUpgrade(Version fromVersion, Version... intermediaryVersions) {
+  private void testDatabaseUpgrade(Version fromVersion, Version... intermediaryVersions) throws Exception {
     startOldVersionServer(fromVersion, false);
     scanProject();
     int files = countFiles(PROJECT_KEY);
     assertThat(files).isGreaterThan(0);
     stopServer();
 
-    Arrays.stream(intermediaryVersions).forEach((sqVersion) -> {
+    for (Version sqVersion : intermediaryVersions) {
       startOldVersionServer(sqVersion, true);
       upgrade(sqVersion);
       verifyAnalysis(files);
       stopServer();
-    });
+    }
 
     startDevServer();
     upgrade(VERSION_CURRENT);
+    checkUrlsAfterUpgrade();
     verifyAnalysis(files);
     stopServer();
   }
 
-  private void verifyAnalysis(int expectedNumberOfFiles) {
+  private void verifyAnalysis(int expectedNumberOfFiles) throws Exception {
     assertThat(countFiles(PROJECT_KEY)).isEqualTo(expectedNumberOfFiles);
     scanProject();
     assertThat(countFiles(PROJECT_KEY)).isEqualTo(expectedNumberOfFiles);
     browseWebapp();
   }
 
-  private void upgrade(Version sqVersion) {
+  private void upgrade(Version sqVersion) throws Exception {
     checkSystemStatus(sqVersion, ServerStatusResponse.Status.DB_MIGRATION_NEEDED);
     if (sqVersion.equals(VERSION_CURRENT)) {
       checkUrlsBeforeUpgrade();
@@ -115,7 +123,6 @@ public class UpgradeTest {
       .describedAs("Migration status of version " + sqVersion + " should be MIGRATION_SUCCEEDED")
       .isEqualTo(ServerMigrationResponse.Status.MIGRATION_SUCCEEDED);
     checkSystemStatus(sqVersion, ServerStatusResponse.Status.UP);
-    checkUrlsAfterUpgrade();
   }
 
   private void checkSystemStatus(Version sqVersion, ServerStatusResponse.Status serverStatus) {
@@ -126,16 +133,16 @@ public class UpgradeTest {
       .isEqualTo(serverStatus);
   }
 
-  private void checkUrlsBeforeUpgrade() {
+  private void checkUrlsBeforeUpgrade() throws Exception {
     // These urls should be available when system requires a migration
     checkUrlIsReturningOk("/api/system/status");
     checkUrlIsReturningOk("/api/system/db_migration_status");
     checkUrlIsReturningOk("/api/webservices/list");
 
     // These urls should not be available when system requires a migration
-    checkUrlIsReturningNotFound("/api/issues/search?projectKeys=org.apache.struts%3Astruts-core");
-    checkUrlIsReturningNotFound("/api/components/tree?baseComponentKey=org.apache.struts%3Astruts-core");
-    checkUrlIsReturningNotFound("/api/measures/component_tree?baseComponentKey=org.apache.struts%3Astruts-core&metricKeys=ncloc,files,violations");
+    checkUrlIsReturningNotFound("/api/issues/search?projectKeys=" + encodeUrl(MODULE_KEY));
+    checkUrlIsReturningNotFound("/api/components/tree?baseComponentKey=" + encodeUrl(MODULE_KEY));
+    checkUrlIsReturningNotFound("/api/measures/component_tree?metricKeys=ncloc,files,violations&baseComponentKey=" + encodeUrl(MODULE_KEY));
     checkUrlIsReturningNotFound("/api/qualityprofiles/search");
 
     // These page should all redirect to maintenance page
@@ -143,33 +150,43 @@ public class UpgradeTest {
     checkUrlIsRedirectedToMaintenancePage("/issues/index");
     checkUrlIsRedirectedToMaintenancePage("/dashboard/index/org.apache.struts:struts-parent");
     checkUrlIsRedirectedToMaintenancePage("/issues");
-    checkUrlIsRedirectedToMaintenancePage(
-      "/component/index?id=org.apache.struts%3Astruts-core%3Asrc%2Fmain%2Fjava%2Forg%2Fapache%2Fstruts%2Fchain%2Fcommands%2Fgeneric%2FWrappingLookupCommand.java");
+    checkUrlIsRedirectedToMaintenancePage("/component/index?id=" + encodeUrl(FILE_KEY));
     checkUrlIsRedirectedToMaintenancePage("/profiles");
   }
 
-  private void checkUrlsAfterUpgrade() {
+  private static String encodeUrl(String s) throws UnsupportedEncodingException {
+    return URLEncoder.encode(s, UTF_8.name());
+  }
+
+  private void checkUrlsAfterUpgrade() throws Exception {
+    WsClient wsClient = newWsClient(orchestrator);
+    WsMeasures.ComponentWsResponse fileMeasures = wsClient.measures()
+      .component(new ComponentWsRequest().setComponent(FILE_KEY).setMetricKeys(asList("ncloc", "reliability_rating")));
+    assertThat(fileMeasures.getComponent().getMeasuresList())
+      .extracting(Measure::getMetric, Measure::getValue)
+      .containsExactlyInAnyOrder(Tuple.tuple("ncloc", "148"), Tuple.tuple("reliability_rating", "1.0"));
+
     checkUrlIsReturningOk("/api/system/status");
     checkUrlIsReturningOk("/api/system/db_migration_status");
     checkUrlIsReturningOk("/api/webservices/list");
     checkUrlIsReturningOk("/api/l10n/index");
 
-    checkUrlIsReturningOk("/api/issues/search?projectKeys=org.apache.struts%3Astruts-core");
-    checkUrlIsReturningOk("/api/components/tree?baseComponentKey=org.apache.struts%3Astruts-core");
-    checkUrlIsReturningOk("/api/measures/component_tree?baseComponentKey=org.apache.struts%3Astruts-core&metricKeys=ncloc,files,violations");
+    checkUrlIsReturningOk("/api/issues/search?projectKeys=" + encodeUrl(MODULE_KEY));
+    checkUrlIsReturningOk("/api/components/tree?baseComponentKey=" + encodeUrl(MODULE_KEY));
+    checkUrlIsReturningOk("/api/measures/component_tree?metricKeys=ncloc,files,violations&baseComponentKey=" + encodeUrl(MODULE_KEY));
     checkUrlIsReturningOk("/api/qualityprofiles/search");
   }
 
-  private void browseWebapp() {
+  private void browseWebapp() throws UnsupportedEncodingException {
     testUrl("/");
-    testUrl("/api/issues/search?projectKeys=org.apache.struts%3Astruts-core");
-    testUrl("/api/components/tree?baseComponentKey=org.apache.struts%3Astruts-core");
-    testUrl("/api/measures/component_tree?baseComponentKey=org.apache.struts%3Astruts-core&metricKeys=ncloc,files,violations");
+    testUrl("/api/issues/search?projectKeys=" + encodeUrl(MODULE_KEY));
+    testUrl("/api/components/tree?baseComponentKey=" + encodeUrl(MODULE_KEY));
+    testUrl("/api/measures/component_tree?metricKeys=ncloc,files,violations&baseComponentKey=" + encodeUrl(MODULE_KEY));
     testUrl("/api/qualityprofiles/search");
     testUrl("/issues/index");
-    testUrl("/dashboard/index/org.apache.struts:struts-parent");
     testUrl("/issues");
-    testUrl("/component/index?id=org.apache.struts%3Astruts-core%3Asrc%2Fmain%2Fjava%2Forg%2Fapache%2Fstruts%2Fchain%2Fcommands%2Fgeneric%2FWrappingLookupCommand.java");
+    testUrl("/dashboard/index/" + encodeUrl(PROJECT_KEY));
+    testUrl("/component/index?id=" + encodeUrl(FILE_KEY));
     testUrl("/profiles");
   }
 
@@ -279,6 +296,6 @@ public class UpgradeTest {
 
   private void shouldBeRedirectToMaintenance(String relativeUrl) {
     Selenide.open(relativeUrl);
-    $("#content").should(hasText("SonarQube is under maintenance"));
+    $("#content").should(text("SonarQube is under maintenance"));
   }
 }
