@@ -107,10 +107,6 @@ public class MeasureDao implements Dao {
     return mapper(dbSession).selectPastMeasuresOnSeveralAnalyses(query);
   }
 
-  public List<MeasureDto> selectByComponentsAndMetrics(DbSession dbSession, Collection<String> componentUuids, Collection<Integer> metricIds) {
-    return executeLargeInputs(componentUuids, partitionComponentUuids -> mapper(dbSession).selectByComponentsAndMetrics(partitionComponentUuids, metricIds));
-  }
-
   public void insert(DbSession session, MeasureDto measureDto) {
     mapper(session).insert(measureDto);
   }

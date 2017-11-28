@@ -19,7 +19,6 @@
  */
 package org.sonar.db.measure;
 
-import java.util.Collection;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.ResultHandler;
@@ -40,8 +39,6 @@ public interface MeasureMapper {
     @Param("metricIds") List<Integer> metricIds);
 
   List<MeasureDto> selectPastMeasuresOnSeveralAnalyses(@Param("query") PastMeasureQuery query);
-
-  List<MeasureDto> selectByComponentsAndMetrics(@Param("componentUuids") List<String> componentUuids, @Param("metricIds") Collection<Integer> metricIds);
 
   void insert(MeasureDto measureDto);
 }
