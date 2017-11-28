@@ -61,7 +61,7 @@ import org.sonar.db.component.ComponentDto;
 import org.sonar.db.component.ComponentTreeQuery;
 import org.sonar.db.component.ComponentTreeQuery.Strategy;
 import org.sonar.db.component.SnapshotDto;
-import org.sonar.db.measure.MeasureDto;
+import org.sonar.db.measure.LiveMeasureDto;
 import org.sonar.db.measure.MeasureTreeQuery;
 import org.sonar.db.metric.MetricDto;
 import org.sonar.db.metric.MetricDtoFunctions;
@@ -94,8 +94,8 @@ import static org.sonar.server.measure.ws.MetricDtoToWsMetric.metricDtoToWsMetri
 import static org.sonar.server.measure.ws.SnapshotDtoToWsPeriods.snapshotToWsPeriods;
 import static org.sonar.server.ws.KeyExamples.KEY_BRANCH_EXAMPLE_001;
 import static org.sonar.server.ws.KeyExamples.KEY_PROJECT_EXAMPLE_001;
-import static org.sonar.server.ws.WsParameterBuilder.QualifierParameterContext.newQualifierParameterContext;
 import static org.sonar.server.ws.WsParameterBuilder.createQualifiersParameter;
+import static org.sonar.server.ws.WsParameterBuilder.QualifierParameterContext.newQualifierParameterContext;
 import static org.sonar.server.ws.WsUtils.checkRequest;
 import static org.sonar.server.ws.WsUtils.writeProtobuf;
 import static org.sonarqube.ws.client.measure.MeasuresWsParameters.ACTION_COMPONENT_TREE;
@@ -495,8 +495,8 @@ public class ComponentTreeAction implements MeasuresWsAction {
             .build();
 
     Table<String, MetricDto, ComponentTreeData.Measure> measuresByComponentUuidAndMetric = HashBasedTable.create(components.size(), metrics.size());
-    dbClient.measureDao().selectTreeByQuery(dbSession, baseComponent, measureQuery, result -> {
-      MeasureDto measureDto = result.getResultObject();
+    dbClient.liveMeasureDao().selectTreeByQuery(dbSession, baseComponent, measureQuery, result -> {
+      LiveMeasureDto measureDto = result.getResultObject();
       measuresByComponentUuidAndMetric.put(
               measureDto.getComponentUuid(),
               metricsById.get(measureDto.getMetricId()),
