@@ -27,7 +27,6 @@ import org.sonar.core.util.CloseableIterator;
 import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.measure.MeasureDto;
-import org.sonar.db.measure.MeasureQuery;
 import org.sonar.scanner.protocol.output.ScannerReport;
 import org.sonar.server.computation.task.projectanalysis.batch.BatchReportReader;
 import org.sonar.server.computation.task.projectanalysis.component.Component;
@@ -66,8 +65,7 @@ public class MeasureRepositoryImpl implements MeasureRepository {
     requireNonNull(metric);
 
     try (DbSession dbSession = dbClient.openSession(false)) {
-      MeasureQuery query = MeasureQuery.builder().setComponentUuid(component.getUuid()).setMetricKey(metric.getKey()).build();
-      java.util.Optional<MeasureDto> measureDto = dbClient.measureDao().selectSingle(dbSession, query);
+      java.util.Optional<MeasureDto> measureDto = dbClient.measureDao().selectLastMeasure(dbSession, component.getUuid(), metric.getKey());
       if (measureDto.isPresent()) {
         return measureTransformer.toMeasure(measureDto.get(), metric);
       }

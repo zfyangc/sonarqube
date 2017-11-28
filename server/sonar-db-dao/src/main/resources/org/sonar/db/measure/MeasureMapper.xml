@@ -16,6 +16,29 @@
     pm.variation_value_1 as variation
   </sql>
 
+  <select id="selectLastMeasure" parameterType="map" resultType="Measure">
+    select <include refid="measureColumns"/>
+    from project_measures pm
+    inner join metrics m on m.id = pm.metric_id
+    inner join snapshots s on s.uuid = pm.analysis_uuid
+    where
+      pm.component_uuid = #{componentUuid,jdbcType=VARCHAR} and
+      m.name = #{metricKey,jdbcType=VARCHAR} and
+      s.islast= ${_true}
+  </select>
+
+  <select id="selectMeasure" parameterType="map" resultType="Measure">
+    select <include refid="measureColumns"/>
+    from project_measures pm
+    inner join metrics m on m.id = pm.metric_id
+    inner join snapshots s on s.uuid = pm.analysis_uuid
+    where
+    pm.component_uuid = #{componentUuid,jdbcType=VARCHAR} and
+    m.name = #{metricKey,jdbcType=VARCHAR} and
+    s.uuid = #{analysisUuid,jdbcType=VARCHAR} and
+    s.status = 'P'
+  </select>
+
   <select id="selectByQueryOnProjects" parameterType="map" resultType="Measure">
     select <include refid="measureColumns"/> from project_measures pm
     <include refid="selectByQueryCommonJoins"/>

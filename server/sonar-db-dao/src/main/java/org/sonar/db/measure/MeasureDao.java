@@ -19,7 +19,6 @@
  */
 package org.sonar.db.measure;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
@@ -32,9 +31,12 @@ import static org.sonar.db.DatabaseUtils.executeLargeInputs;
 
 public class MeasureDao implements Dao {
 
-  public Optional<MeasureDto> selectSingle(DbSession dbSession, MeasureQuery query) {
-    List<MeasureDto> measures = selectByQuery(dbSession, query);
-    return Optional.ofNullable(Iterables.getOnlyElement(measures, null));
+  public Optional<MeasureDto> selectLastMeasure(DbSession dbSession, String componentUuid, String metricKey) {
+    return Optional.ofNullable(mapper(dbSession).selectLastMeasure(componentUuid, metricKey));
+  }
+
+  public Optional<MeasureDto> selectMeasure(DbSession dbSession, String analysisUuid, String componentUuid, String metricKey) {
+    return Optional.ofNullable(mapper(dbSession).selectMeasure(analysisUuid, componentUuid, metricKey));
   }
 
   /**

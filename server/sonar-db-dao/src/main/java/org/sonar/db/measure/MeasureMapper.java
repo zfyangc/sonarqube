@@ -20,9 +20,23 @@
 package org.sonar.db.measure;
 
 import java.util.List;
+import javax.annotation.CheckForNull;
 import org.apache.ibatis.annotations.Param;
 
 public interface MeasureMapper {
+
+  @CheckForNull
+  MeasureDto selectLastMeasure(
+    @Param("componentUuid") String componentUuid,
+    @Param("metricKey") String metricKey
+  );
+
+  @CheckForNull
+  MeasureDto selectMeasure(
+    @Param("analysisUuid") String analysisUuid,
+    @Param("componentUuid") String componentUuid,
+    @Param("metricKey") String metricKey
+  );
 
   List<MeasureDto> selectByQueryOnProjects(@Param("query") MeasureQuery query);
 

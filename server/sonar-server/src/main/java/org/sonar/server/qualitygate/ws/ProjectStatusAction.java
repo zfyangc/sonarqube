@@ -20,11 +20,10 @@
 package org.sonar.server.qualitygate.ws;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.server.ws.Change;
 import org.sonar.api.server.ws.Request;
@@ -38,7 +37,6 @@ import org.sonar.db.component.ComponentDto;
 import org.sonar.db.component.SnapshotDto;
 import org.sonar.db.measure.LiveMeasureDto;
 import org.sonar.db.measure.MeasureDto;
-import org.sonar.db.measure.MeasureQuery;
 import org.sonar.server.component.ComponentFinder;
 import org.sonar.server.component.ComponentFinder.ParamNames;
 import org.sonar.server.exceptions.BadRequestException;
@@ -167,15 +165,8 @@ public class ProjectStatusAction implements QualityGatesWsAction {
       }
       // get the gate status as it was computed during the specified analysis
       String analysisUuid = projectAndSnapshot.snapshotDto.get().getUuid();
-      MeasureQuery measureQuery = MeasureQuery.builder()
-        .setAnalysisUuid(analysisUuid)
-        .setProjectUuids(Collections.singletonList(projectAndSnapshot.project.projectUuid()))
-        .setMetricKey(CoreMetrics.QUALITY_GATE_DETAILS_KEY)
-        .build();
-      List<MeasureDto> measures = dbClient.measureDao().selectByQuery(dbSession, measureQuery);
-      return measures.isEmpty()
-        ? Optional.empty()
-        : Optional.ofNullable(measures.get(0).getData());
+      return dbClient.measureDao().selectMeasure(dbSession, analysisUuid, projectAndSnapshot.project.projectUuid(), CoreMetrics.QUALITY_GATE_DETAILS_KEY)
+        .map(MeasureDto::getData);
     }
 
     // do not restrict to a specified analysis, use the live measure
@@ -190,6 +181,7 @@ public class ProjectStatusAction implements QualityGatesWsAction {
     }
   }
 
+  @Immutable
   private static class ProjectAndSnapshot {
     private final ComponentDto project;
     private final Optional<SnapshotDto> snapshotDto;

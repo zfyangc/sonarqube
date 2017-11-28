@@ -19,13 +19,12 @@
  */
 package org.sonar.server.computation.task.projectanalysis.step;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Multimap;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
@@ -36,6 +35,7 @@ import org.sonar.server.computation.task.projectanalysis.component.CrawlerDepthL
 import org.sonar.server.computation.task.projectanalysis.component.DepthTraversalTypeAwareCrawler;
 import org.sonar.server.computation.task.projectanalysis.component.TreeRootHolder;
 import org.sonar.server.computation.task.projectanalysis.component.TypeAwareVisitorAdapter;
+import org.sonar.server.computation.task.projectanalysis.measure.BestValueOptimization;
 import org.sonar.server.computation.task.projectanalysis.measure.Measure;
 import org.sonar.server.computation.task.projectanalysis.measure.MeasureRepository;
 import org.sonar.server.computation.task.projectanalysis.measure.MeasureToMeasureDto;
@@ -43,7 +43,7 @@ import org.sonar.server.computation.task.projectanalysis.metric.Metric;
 import org.sonar.server.computation.task.projectanalysis.metric.MetricRepository;
 import org.sonar.server.computation.task.step.ComputationStep;
 
-import static com.google.common.collect.FluentIterable.from;
+import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 import static org.sonar.api.measures.CoreMetrics.CLASS_COMPLEXITY_DISTRIBUTION_KEY;
 import static org.sonar.api.measures.CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION_KEY;
@@ -53,9 +53,9 @@ import static org.sonar.server.computation.task.projectanalysis.component.Compon
 public class PersistLiveMeasuresStep implements ComputationStep {
 
   /**
-   * List of metrics that should not be persisted on file measure (Waiting for SONAR-6688 to be implemented)
+   * List of metrics that should not be persisted on file measure.
    */
-  private static final Set<String> NOT_TO_PERSIST_ON_FILE_METRIC_KEYS = unmodifiableSet(new HashSet<>(Arrays.asList(
+  private static final Set<String> NOT_TO_PERSIST_ON_FILE_METRIC_KEYS = unmodifiableSet(new HashSet<>(asList(
     FILE_COMPLEXITY_DISTRIBUTION_KEY,
     FUNCTION_COMPLEXITY_DISTRIBUTION_KEY,
     CLASS_COMPLEXITY_DISTRIBUTION_KEY)));
@@ -100,22 +100,19 @@ public class PersistLiveMeasuresStep implements ComputationStep {
     @Override
     public void visitAny(Component component) {
       Multimap<String, Measure> measures = measureRepository.getRawMeasures(component);
-      persistMeasures(component, measures);
-    }
-
-    private void persistMeasures(Component component, Multimap<String, Measure> batchReportMeasures) {
-      for (Map.Entry<String, Collection<Measure>> measures : batchReportMeasures.asMap().entrySet()) {
-        String metricKey = measures.getKey();
+      for (Map.Entry<String, Collection<Measure>> measuresByMetricKey : measures.asMap().entrySet()) {
+        String metricKey = measuresByMetricKey.getKey();
         if (NOT_TO_PERSIST_ON_FILE_METRIC_KEYS.contains(metricKey) && component.getType() == Component.Type.FILE) {
           continue;
         }
 
         Metric metric = metricRepository.getByKey(metricKey);
+        Predicate<Measure> notBestValueOptimized = BestValueOptimization.from(metric, component).negate();
         LiveMeasureDao dao = dbClient.liveMeasureDao();
-        for (Measure measure : from(measures.getValue()).filter(NonEmptyMeasure.INSTANCE)) {
+        measuresByMetricKey.getValue().stream().filter(NonEmptyMeasure.INSTANCE).filter(notBestValueOptimized).forEach(measure -> {
           LiveMeasureDto dto = measureToMeasureDto.toLiveMeasureDto(measure, metric, component);
           dao.insert(session, dto);
-        }
+        });
       }
     }
 
@@ -125,7 +122,7 @@ public class PersistLiveMeasuresStep implements ComputationStep {
     INSTANCE;
 
     @Override
-    public boolean apply(@Nonnull Measure input) {
+    public boolean test(@Nonnull Measure input) {
       return input.getValueType() != Measure.ValueType.NO_VALUE || input.hasVariation() || input.getData() != null;
     }
   }
