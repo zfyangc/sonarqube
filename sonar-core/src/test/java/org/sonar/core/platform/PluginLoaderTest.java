@@ -86,20 +86,6 @@ public class PluginLoaderTest {
     assertThat(def.getMainClassesByPluginKey()).containsOnly(MapEntry.entry("foo", "org.foo.FooPlugin"));
     // TODO test mask - require change in sonar-classloader
 
-    // built with SQ 5.2+ -> does not need API compatibility mode
-    assertThat(def.isCompatibilityMode()).isFalse();
-  }
-
-  @Test
-  public void enable_compatibility_mode_if_plugin_is_built_before_5_2() throws Exception {
-    File jarFile = temp.newFile();
-    PluginInfo info = new PluginInfo("foo")
-      .setJarFile(jarFile)
-      .setMainClass("org.foo.FooPlugin")
-      .setMinimalSqVersion(Version.create("4.5.2"));
-
-    Collection<PluginClassLoaderDef> defs = loader.defineClassloaders(ImmutableMap.of("foo", info));
-    assertThat(defs.iterator().next().isCompatibilityMode()).isTrue();
   }
 
   /**
