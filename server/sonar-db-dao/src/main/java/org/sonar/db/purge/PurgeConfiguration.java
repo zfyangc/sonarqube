@@ -26,23 +26,25 @@ import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.apache.commons.lang.time.DateUtils;
 import org.sonar.api.config.Configuration;
-import org.sonar.api.resources.Scopes;
+import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.utils.System2;
 import org.sonar.core.config.PurgeConstants;
+
+import static java.util.Arrays.asList;
 
 public class PurgeConfiguration {
 
   private final IdUuidPair rootProjectIdUuid;
-  private final String[] scopesWithoutHistoricalData;
+  private final Collection<String> qualifiersWithoutHistoricalData;
   private final int maxAgeInDaysOfClosedIssues;
   private final Optional<Integer> maxAgeInDaysOfInactiveShortLivingBranches;
   private final System2 system2;
   private final Collection<String> disabledComponentUuids;
 
-  public PurgeConfiguration(IdUuidPair rootProjectId, String[] scopesWithoutHistoricalData, int maxAgeInDaysOfClosedIssues,
+  public PurgeConfiguration(IdUuidPair rootProjectId, Collection<String> qualifiersWithoutHistoricalData, int maxAgeInDaysOfClosedIssues,
     Optional<Integer> maxAgeInDaysOfInactiveShortLivingBranches, System2 system2, Collection<String> disabledComponentUuids) {
     this.rootProjectIdUuid = rootProjectId;
-    this.scopesWithoutHistoricalData = scopesWithoutHistoricalData;
+    this.qualifiersWithoutHistoricalData = qualifiersWithoutHistoricalData;
     this.maxAgeInDaysOfClosedIssues = maxAgeInDaysOfClosedIssues;
     this.system2 = system2;
     this.disabledComponentUuids = disabledComponentUuids;
@@ -50,11 +52,11 @@ public class PurgeConfiguration {
   }
 
   public static PurgeConfiguration newDefaultPurgeConfiguration(Configuration config, IdUuidPair idUuidPair, Collection<String> disabledComponentUuids) {
-    String[] scopes = new String[] {Scopes.FILE};
+    Collection<String> qualifiersWithoutHistoricalData = asList(Qualifiers.FILE, Qualifiers.UNIT_TEST_FILE);
     if (config.getBoolean(PurgeConstants.PROPERTY_CLEAN_DIRECTORY).orElse(false)) {
-      scopes = new String[] {Scopes.DIRECTORY, Scopes.FILE};
+      qualifiersWithoutHistoricalData = asList(Qualifiers.DIRECTORY, Qualifiers.FILE, Qualifiers.UNIT_TEST_FILE);
     }
-    return new PurgeConfiguration(idUuidPair, scopes, config.getInt(PurgeConstants.DAYS_BEFORE_DELETING_CLOSED_ISSUES).get(),
+    return new PurgeConfiguration(idUuidPair, qualifiersWithoutHistoricalData, config.getInt(PurgeConstants.DAYS_BEFORE_DELETING_CLOSED_ISSUES).get(),
       config.getInt(PurgeConstants.DAYS_BEFORE_DELETING_INACTIVE_SHORT_LIVING_BRANCHES), System2.INSTANCE, disabledComponentUuids);
   }
 
@@ -62,8 +64,8 @@ public class PurgeConfiguration {
     return rootProjectIdUuid;
   }
 
-  public String[] scopesWithoutHistoricalData() {
-    return scopesWithoutHistoricalData;
+  public Collection<String> getQualifiersWithoutHistoricalData() {
+    return qualifiersWithoutHistoricalData;
   }
 
   public Collection<String> getDisabledComponentUuids() {
