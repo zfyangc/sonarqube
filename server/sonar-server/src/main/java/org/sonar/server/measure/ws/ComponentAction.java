@@ -77,6 +77,8 @@ import static org.sonarqube.ws.client.measure.MeasuresWsParameters.DEPRECATED_PA
 import static org.sonarqube.ws.client.measure.MeasuresWsParameters.PARAM_ADDITIONAL_FIELDS;
 import static org.sonarqube.ws.client.measure.MeasuresWsParameters.PARAM_BRANCH;
 import static org.sonarqube.ws.client.measure.MeasuresWsParameters.PARAM_COMPONENT;
+import static org.sonarqube.ws.client.measure.MeasuresWsParameters.PARAM_DEVELOPER_ID;
+import static org.sonarqube.ws.client.measure.MeasuresWsParameters.PARAM_DEVELOPER_KEY;
 import static org.sonarqube.ws.client.measure.MeasuresWsParameters.PARAM_METRIC_KEYS;
 
 public class ComponentAction implements MeasuresWsAction {
@@ -128,14 +130,15 @@ public class ComponentAction implements MeasuresWsAction {
 
   @Override
   public void handle(Request request, Response response) throws Exception {
+    if (request.param(PARAM_DEVELOPER_ID) != null || request.param(PARAM_DEVELOPER_KEY) != null) {
+      throw new NotFoundException("The Developer Cockpit feature has been dropped. The specified developer cannot be found.");
+    }
+
     ComponentWsResponse componentWsResponse = doHandle(toComponentWsRequest(request));
     writeProtobuf(componentWsResponse, request, response);
   }
 
   private ComponentWsResponse doHandle(ComponentRequest request) {
-    if (request.getDeveloperId() != null || request.getDeveloperKey() != null) {
-      throw new NotFoundException("The Developer Cockpit feature has been dropped. The specified developer cannot be found.");
-    }
     try (DbSession dbSession = dbClient.openSession(false)) {
       ComponentDto component = loadComponent(dbSession, request);
       Optional<ComponentDto> refComponent = getReferenceComponent(dbSession, component);
