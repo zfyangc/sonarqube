@@ -145,7 +145,7 @@ public class QualityGateServiceImplTest {
   }
 
   private MetricImpl mockMetricInRepository(String metricKey) {
-    MetricImpl metric = new MetricImpl(new Random().nextInt(999), metricKey, RandomStringUtils.randomAlphanumeric(20), Metric.MetricType.INT);
+    MetricImpl metric = new MetricImpl(new Random().nextInt(999), metricKey, RandomStringUtils.randomAlphanumeric(20), Metric.MetricType.INT, true);
     when(metricRepository.getByKey(metricKey))
       .thenReturn(metric);
     return metric;

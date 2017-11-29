@@ -53,7 +53,7 @@ import static org.sonar.server.computation.task.projectanalysis.component.Compon
 public class PersistLiveMeasuresStep implements ComputationStep {
 
   /**
-   * List of metrics that should not be persisted on file measure.
+   * List of metrics that should not be persisted on files.
    */
   private static final Set<String> NOT_TO_PERSIST_ON_FILE_METRIC_KEYS = unmodifiableSet(new HashSet<>(asList(
     FILE_COMPLEXITY_DISTRIBUTION_KEY,

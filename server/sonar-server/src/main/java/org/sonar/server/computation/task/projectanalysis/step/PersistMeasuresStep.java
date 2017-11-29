@@ -29,7 +29,6 @@ import org.sonar.core.config.PurgeConstants;
 import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.measure.MeasureDao;
-import org.sonar.db.measure.MeasureDto;
 import org.sonar.server.computation.task.projectanalysis.component.Component;
 import org.sonar.server.computation.task.projectanalysis.component.ConfigurationRepository;
 import org.sonar.server.computation.task.projectanalysis.component.CrawlerDepthLimit;
@@ -126,17 +125,18 @@ public class PersistMeasuresStep implements ComputationStep {
 
     private void persistMeasures(Component component) {
       Multimap<String, Measure> measures = measureRepository.getRawMeasures(component);
+      MeasureDao measureDao = dbClient.measureDao();
       for (Map.Entry<String, Collection<Measure>> measuresByMetricKey : measures.asMap().entrySet()) {
         String metricKey = measuresByMetricKey.getKey();
         Metric metric = metricRepository.getByKey(metricKey);
-        MeasureDao measureDao = dbClient.measureDao();
-        measuresByMetricKey.getValue().stream().filter(NonEmptyMeasure.INSTANCE).forEach(measure -> {
-          MeasureDto measureDto = measureToMeasureDto.toMeasureDto(measure, metric, component);
-          measureDao.insert(session, measureDto);
-        });
+        if (metric.isHistoryStored()) {
+          measuresByMetricKey.getValue().stream()
+            .filter(NonEmptyMeasure.INSTANCE)
+            .map(measure -> measureToMeasureDto.toMeasureDto(measure, metric, component))
+            .forEach(dto -> measureDao.insert(session, dto));
+        }
       }
     }
-
   }
 
   private enum NonEmptyMeasure implements Predicate<Measure> {

@@ -47,6 +47,7 @@ public class MetricDtoToMetricTest {
       assertThat(metric.getType()).isEqualTo(metricType);
       assertThat(metric.isBestValueOptimized()).isFalse();
       assertThat(metric.getBestValue()).isEqualTo(SOME_BEST_VALUE);
+      assertThat(metric.isHistoryStored()).isFalse();
     }
   }
 
@@ -62,11 +63,12 @@ public class MetricDtoToMetricTest {
 
   private static MetricDto createMetricDto(Metric.MetricType metricType) {
     return new MetricDto()
-        .setId(metricType.name().hashCode())
-        .setKey(metricType.name() + "_key")
-        .setShortName(metricType.name() + "_name")
-        .setValueType(metricType.name())
-        .setBestValue(SOME_BEST_VALUE)
-        .setEnabled(true);
+      .setId(metricType.name().hashCode())
+      .setKey(metricType.name() + "_key")
+      .setShortName(metricType.name() + "_name")
+      .setValueType(metricType.name())
+      .setBestValue(SOME_BEST_VALUE)
+      .setDeleteHistoricalData(true)
+      .setEnabled(true);
   }
 }

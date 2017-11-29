@@ -348,7 +348,7 @@ public class QualityGateMeasuresStepTest {
   }
 
   private static MetricImpl createIntMetric(int index) {
-    return new MetricImpl(index, "metricKey" + index, "metricName" + index, Metric.MetricType.INT);
+    return new MetricImpl(index, "metricKey" + index, "metricName" + index, Metric.MetricType.INT, true);
   }
 
   private static class QualityGateStatusHolderAssertions extends AbstractAssert<QualityGateStatusHolderAssertions, QualityGateStatusHolder> {

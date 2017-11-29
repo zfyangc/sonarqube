@@ -43,6 +43,6 @@ enum MetricDtoToMetric implements Function<MetricDto, Metric> {
     return new MetricImpl(
       metricDto.getId(), metricDto.getKey(), metricDto.getShortName(), metricType,
       decimalScale,
-      metricDto.getBestValue(), metricDto.isOptimizedBestValue());
+      metricDto.getBestValue(), metricDto.isOptimizedBestValue(), !metricDto.isDeleteHistoricalData());
   }
 }

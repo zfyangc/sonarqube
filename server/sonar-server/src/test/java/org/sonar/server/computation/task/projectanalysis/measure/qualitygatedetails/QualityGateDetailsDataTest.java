@@ -52,7 +52,7 @@ public class QualityGateDetailsDataTest {
   @Test
   public void verify_json_for_each_type_of_condition() {
     String value = "actualValue";
-    Condition condition = new Condition(new MetricImpl(1, "key1", "name1", Metric.MetricType.STRING), Condition.Operator.GREATER_THAN.getDbValue(), "errorTh", "warnTh", true);
+    Condition condition = new Condition(new MetricImpl(1, "key1", "name1", Metric.MetricType.STRING, true), Condition.Operator.GREATER_THAN.getDbValue(), "errorTh", "warnTh", true);
     ImmutableList<EvaluatedCondition> evaluatedConditions = ImmutableList.of(
       new EvaluatedCondition(condition, Measure.Level.OK, value),
       new EvaluatedCondition(condition, Measure.Level.WARN, value),

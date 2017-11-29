@@ -38,12 +38,12 @@ import static org.assertj.guava.api.Assertions.assertThat;
 
 @RunWith(DataProviderRunner.class)
 public class MeasureDtoToMeasureTest {
-  private static final Metric SOME_INT_METRIC = new MetricImpl(42, "int", "name", Metric.MetricType.INT);
-  private static final Metric SOME_LONG_METRIC = new MetricImpl(42, "long", "name", Metric.MetricType.WORK_DUR);
-  private static final Metric SOME_DOUBLE_METRIC = new MetricImpl(42, "double", "name", Metric.MetricType.FLOAT);
-  private static final Metric SOME_STRING_METRIC = new MetricImpl(42, "string", "name", Metric.MetricType.STRING);
-  private static final Metric SOME_BOOLEAN_METRIC = new MetricImpl(42, "boolean", "name", Metric.MetricType.BOOL);
-  private static final Metric SOME_LEVEL_METRIC = new MetricImpl(42, "level", "name", Metric.MetricType.LEVEL);
+  private static final Metric SOME_INT_METRIC = new MetricImpl(42, "int", "name", Metric.MetricType.INT, true);
+  private static final Metric SOME_LONG_METRIC = new MetricImpl(42, "long", "name", Metric.MetricType.WORK_DUR, true);
+  private static final Metric SOME_DOUBLE_METRIC = new MetricImpl(42, "double", "name", Metric.MetricType.FLOAT, true);
+  private static final Metric SOME_STRING_METRIC = new MetricImpl(42, "string", "name", Metric.MetricType.STRING, true);
+  private static final Metric SOME_BOOLEAN_METRIC = new MetricImpl(42, "boolean", "name", Metric.MetricType.BOOL, true);
+  private static final Metric SOME_LEVEL_METRIC = new MetricImpl(42, "level", "name", Metric.MetricType.LEVEL, true);
 
   private static final String SOME_DATA = "some_data man!";
   private static final String SOME_ALERT_TEXT = "some alert text_be_careFul!";
@@ -322,7 +322,7 @@ public class MeasureDtoToMeasureTest {
 
   @Test
   public void toMeasure_should_not_loose_decimals_of_float_values() {
-    MetricImpl metric = new MetricImpl(42, "double", "name", Metric.MetricType.FLOAT, 5, null, false);
+    MetricImpl metric = new MetricImpl(42, "double", "name", Metric.MetricType.FLOAT, 5, null, false, true);
     MeasureDto measureDto = new MeasureDto()
       .setValue(0.12345);
 

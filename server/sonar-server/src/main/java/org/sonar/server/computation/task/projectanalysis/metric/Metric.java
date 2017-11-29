@@ -55,6 +55,11 @@ public interface Metric {
    */
   int getDecimalScale();
 
+  /**
+   * Whether past measures must be stored or not.
+   */
+  boolean isHistoryStored();
+
   enum MetricType {
     INT(Measure.ValueType.INT),
     MILLISEC(Measure.ValueType.LONG),

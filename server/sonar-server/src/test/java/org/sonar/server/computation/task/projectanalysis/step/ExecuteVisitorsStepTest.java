@@ -64,7 +64,7 @@ public class ExecuteVisitorsStepTest {
   @Rule
   public MetricRepositoryRule metricRepository = new MetricRepositoryRule()
     .add(1, NCLOC)
-    .add(new MetricImpl(2, TEST_METRIC_KEY, "name", Metric.MetricType.INT));
+    .add(new MetricImpl(2, TEST_METRIC_KEY, "name", Metric.MetricType.INT, true));
   @Rule
   public MeasureRepositoryRule measureRepository = MeasureRepositoryRule.create(treeRootHolder, metricRepository);
   @Rule
