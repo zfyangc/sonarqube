@@ -28,9 +28,10 @@ import org.sonar.api.utils.System2;
 import org.sonar.db.DbClient;
 import org.sonar.db.DbTester;
 import org.sonar.db.component.ComponentDto;
-import org.sonar.db.measure.MeasureDto;
+import org.sonar.db.measure.LiveMeasureDto;
 import org.sonar.db.metric.MetricDto;
 import org.sonar.server.computation.task.projectanalysis.analysis.MutableAnalysisMetadataHolderRule;
+import org.sonar.server.computation.task.projectanalysis.analysis.Project;
 import org.sonar.server.computation.task.projectanalysis.component.Component;
 import org.sonar.server.computation.task.projectanalysis.component.ReportComponent;
 import org.sonar.server.computation.task.projectanalysis.component.TreeRootHolderRule;
@@ -41,6 +42,7 @@ import org.sonar.server.computation.task.projectanalysis.metric.MetricRepository
 import org.sonar.server.computation.task.step.ComputationStep;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.db.measure.MeasureTesting.newLiveMeasure;
 import static org.sonar.server.computation.task.projectanalysis.component.Component.Type.DIRECTORY;
 import static org.sonar.server.computation.task.projectanalysis.component.Component.Type.FILE;
 import static org.sonar.server.computation.task.projectanalysis.component.Component.Type.MODULE;
@@ -50,14 +52,14 @@ import static org.sonar.server.computation.task.projectanalysis.component.Compon
 import static org.sonar.server.computation.task.projectanalysis.component.Component.Type.VIEW;
 import static org.sonar.server.computation.task.projectanalysis.measure.Measure.newMeasureBuilder;
 
-public class PersistMeasuresStepTest extends BaseStepTest {
+public class PersistLiveMeasuresStepTest extends BaseStepTest {
 
   private static final Metric STRING_METRIC = new Metric.Builder("string-metric", "String metric", Metric.ValueType.STRING).create();
   private static final Metric INT_METRIC = new Metric.Builder("int-metric", "int metric", Metric.ValueType.INT).create();
-  private static final Metric NO_HISTORY_METRIC = new Metric.Builder("no-history-metric", "no history metric", Metric.ValueType.INT)
-    .setDeleteHistoricalData(true).create();
-
-  private static final String ANALYSIS_UUID = "a1";
+  private static final Metric METRIC_WITH_BEST_VALUE = new Metric.Builder("best-value-metric", "best value metric", Metric.ValueType.INT)
+    .setBestValue(0.0)
+    .setOptimizedBestValue(true)
+    .create();
 
   private static final int REF_1 = 1;
   private static final int REF_2 = 2;
@@ -79,17 +81,16 @@ public class PersistMeasuresStepTest extends BaseStepTest {
 
   @Before
   public void setUp() {
-    analysisMetadataHolder.setUuid(ANALYSIS_UUID);
     MetricDto stringMetricDto = db.measures().insertMetric(m -> m.setKey(STRING_METRIC.getKey()).setValueType(Metric.ValueType.STRING.name()));
     MetricDto intMetricDto = db.measures().insertMetric(m -> m.setKey(INT_METRIC.getKey()).setValueType(Metric.ValueType.INT.name()));
-    MetricDto noHistoryMetricDto = db.measures().insertMetric(m -> m.setKey(NO_HISTORY_METRIC.getKey()).setValueType(Metric.ValueType.INT.name()).setDeleteHistoricalData(true));
+    MetricDto bestValueMMetricDto = db.measures().insertMetric(m -> m.setKey(METRIC_WITH_BEST_VALUE.getKey()).setValueType(Metric.ValueType.INT.name()).setOptimizedBestValue(true).setBestValue(0.0));
     metricRepository.add(stringMetricDto.getId(), STRING_METRIC);
     metricRepository.add(intMetricDto.getId(), INT_METRIC);
-    metricRepository.add(noHistoryMetricDto.getId(), NO_HISTORY_METRIC);
+    metricRepository.add(bestValueMMetricDto.getId(), METRIC_WITH_BEST_VALUE);
   }
 
   @Test
-  public void persist_measures_of_project_analysis() {
+  public void persist_live_measures_of_project_analysis() {
     prepareProject();
 
     // the computed measures
@@ -98,34 +99,14 @@ public class PersistMeasuresStepTest extends BaseStepTest {
     measureRepository.addRawMeasure(REF_3, STRING_METRIC.getKey(), newMeasureBuilder().create("dir-value"));
     measureRepository.addRawMeasure(REF_4, STRING_METRIC.getKey(), newMeasureBuilder().create("file-value"));
 
-    execute(true);
+    step().execute();
 
-    // project, module and dir measures are persisted, but not file measures
-    assertThat(db.countRowsOfTable("project_measures")).isEqualTo(3);
-    assertThat(selectMeasure("project-uuid", STRING_METRIC).get().getData()).isEqualTo("project-value");
-    assertThat(selectMeasure("module-uuid", STRING_METRIC).get().getData()).isEqualTo("module-value");
-    assertThat(selectMeasure("dir-uuid", STRING_METRIC).get().getData()).isEqualTo("dir-value");
-    assertThatMeasuresAreNotPersisted("file-uuid");
-  }
-
-  @Test
-  public void persist_measures_of_project_analysis_excluding_directories() {
-    prepareProject();
-
-    // the computed measures
-    measureRepository.addRawMeasure(REF_1, STRING_METRIC.getKey(), newMeasureBuilder().create("project-value"));
-    measureRepository.addRawMeasure(REF_2, STRING_METRIC.getKey(), newMeasureBuilder().create("module-value"));
-    measureRepository.addRawMeasure(REF_3, STRING_METRIC.getKey(), newMeasureBuilder().create("dir-value"));
-    measureRepository.addRawMeasure(REF_4, STRING_METRIC.getKey(), newMeasureBuilder().create("file-value"));
-
-    execute(false);
-
-    // project, module and dir measures are persisted, but not file measures
-    assertThat(db.countRowsOfTable("project_measures")).isEqualTo(2);
-    assertThat(selectMeasure("project-uuid", STRING_METRIC).get().getData()).isEqualTo("project-value");
-    assertThat(selectMeasure("module-uuid", STRING_METRIC).get().getData()).isEqualTo("module-value");
-    assertThatMeasuresAreNotPersisted("dir-uuid");
-    assertThatMeasuresAreNotPersisted("file-uuid");
+    // all measures are persisted, from project to file
+    assertThat(db.countRowsOfTable("live_measures")).isEqualTo(4);
+    assertThat(selectMeasure("project-uuid", STRING_METRIC).get().getDataAsString()).isEqualTo("project-value");
+    assertThat(selectMeasure("module-uuid", STRING_METRIC).get().getDataAsString()).isEqualTo("module-value");
+    assertThat(selectMeasure("dir-uuid", STRING_METRIC).get().getDataAsString()).isEqualTo("dir-value");
+    assertThat(selectMeasure("file-uuid", STRING_METRIC).get().getDataAsString()).isEqualTo("file-value");
   }
 
   @Test
@@ -134,7 +115,7 @@ public class PersistMeasuresStepTest extends BaseStepTest {
     measureRepository.addRawMeasure(REF_1, STRING_METRIC.getKey(), newMeasureBuilder().createNoValue());
     measureRepository.addRawMeasure(REF_1, INT_METRIC.getKey(), newMeasureBuilder().createNoValue());
 
-    execute(false);
+    step().execute();
 
     assertThatMeasureIsNotPersisted("project-uuid", STRING_METRIC);
     assertThatMeasureIsNotPersisted("project-uuid", INT_METRIC);
@@ -145,25 +126,56 @@ public class PersistMeasuresStepTest extends BaseStepTest {
     prepareProject();
     measureRepository.addRawMeasure(REF_1, INT_METRIC.getKey(), newMeasureBuilder().setVariation(42.0).createNoValue());
 
-    execute(false);
+    step().execute();
 
-    MeasureDto persistedMeasure = selectMeasure("project-uuid", INT_METRIC).get();
+    LiveMeasureDto persistedMeasure = selectMeasure("project-uuid", INT_METRIC).get();
     assertThat(persistedMeasure.getValue()).isNull();
     assertThat(persistedMeasure.getVariation()).isEqualTo(42.0);
   }
 
   @Test
-  public void measures_are_not_persisted_if_metric_is_disabled_on_past_measures() {
+  public void delete_measures_from_db_if_no_more_computed() {
     prepareProject();
-    measureRepository.addRawMeasure(REF_1, NO_HISTORY_METRIC.getKey(), newMeasureBuilder().create(42));
+    // measure to be updated
+    LiveMeasureDto measureOnFileInProject = insertMeasure("file-uuid", "project-uuid", INT_METRIC);
+    // measure to be deleted because on a file that has been deleted
+    LiveMeasureDto measureOnDeletedFileInProject = insertMeasure("deleted-file-in-project", "project-uuid", INT_METRIC);
+    // measure to be deleted because not computed anymore
+    LiveMeasureDto otherMeasureOnFileInProject = insertMeasure("file-uuid", "project-uuid", STRING_METRIC);
+    // measure in another project, not touched
+    LiveMeasureDto measureInOtherProject = insertMeasure("other-file-uuid", "other-project-uuid", INT_METRIC);
+    db.commit();
 
-    execute(false);
+    measureRepository.addRawMeasure(REF_4, INT_METRIC.getKey(), newMeasureBuilder().create(42));
 
-    assertThat(selectMeasure("project-uuid", NO_HISTORY_METRIC)).isEmpty();
+    step().execute();
+
+    assertThatMeasureHasValue(measureOnFileInProject, 42);
+    assertThatMeasureDoesNotExist(measureOnDeletedFileInProject);
+    assertThatMeasureDoesNotExist(otherMeasureOnFileInProject);
+    assertThatMeasureHasValue(measureInOtherProject, (int)measureInOtherProject.getValue().doubleValue());
   }
 
   @Test
-  public void persist_all_measures_of_portfolio_analysis() {
+  public void do_not_persist_file_measures_with_best_value() {
+    prepareProject();
+    // measure to be deleted because new value matches the metric best value
+    LiveMeasureDto oldMeasure = insertMeasure("file-uuid", "project-uuid", INT_METRIC);
+    db.commit();
+
+    // project measure with metric best value -> persist with value 0
+    measureRepository.addRawMeasure(REF_1, METRIC_WITH_BEST_VALUE.getKey(), newMeasureBuilder().create(0));
+    // file measure with metric best value -> do not persist
+    measureRepository.addRawMeasure(REF_4, METRIC_WITH_BEST_VALUE.getKey(), newMeasureBuilder().create(0));
+
+    step().execute();
+
+    assertThatMeasureDoesNotExist(oldMeasure);
+    assertThatMeasureHasValue("project-uuid", METRIC_WITH_BEST_VALUE, 0);
+  }
+
+  @Test
+  public void persist_live_measures_of_portfolio_analysis() {
     preparePortfolio();
 
     // the computed measures
@@ -171,12 +183,41 @@ public class PersistMeasuresStepTest extends BaseStepTest {
     measureRepository.addRawMeasure(REF_2, STRING_METRIC.getKey(), newMeasureBuilder().create("subview-value"));
     measureRepository.addRawMeasure(REF_3, STRING_METRIC.getKey(), newMeasureBuilder().create("project-value"));
 
-    execute(true);
+    step().execute();
 
-    assertThat(db.countRowsOfTable("project_measures")).isEqualTo(3);
-    assertThat(selectMeasure("view-uuid", STRING_METRIC).get().getData()).isEqualTo("view-value");
-    assertThat(selectMeasure("subview-uuid", STRING_METRIC).get().getData()).isEqualTo("subview-value");
-    assertThat(selectMeasure("project-uuid", STRING_METRIC).get().getData()).isEqualTo("project-value");
+    assertThat(db.countRowsOfTable("live_measures")).isEqualTo(3);
+    assertThat(selectMeasure("view-uuid", STRING_METRIC).get().getDataAsString()).isEqualTo("view-value");
+    assertThat(selectMeasure("subview-uuid", STRING_METRIC).get().getDataAsString()).isEqualTo("subview-value");
+    assertThat(selectMeasure("project-uuid", STRING_METRIC).get().getDataAsString()).isEqualTo("project-value");
+  }
+
+  private LiveMeasureDto insertMeasure(String componentUuid, String projectUuid, Metric metric) {
+    LiveMeasureDto measure = newLiveMeasure()
+      .setComponentUuid(componentUuid)
+      .setProjectUuid(projectUuid)
+      .setMetricId(metricRepository.getByKey(metric.getKey()).getId());
+    dbClient.liveMeasureDao().insertOrUpdate(db.getSession(), measure);
+    return measure;
+  }
+
+  private void assertThatMeasureHasValue(LiveMeasureDto template, int expectedValue) {
+    Optional<LiveMeasureDto> persisted = dbClient.liveMeasureDao().selectMeasure(db.getSession(),
+      template.getComponentUuid(), metricRepository.getById(template.getMetricId()).getKey());
+    assertThat(persisted).isPresent();
+    assertThat(persisted.get().getValue()).isEqualTo((double) expectedValue);
+  }
+
+  private void assertThatMeasureHasValue(String componentUuid, Metric metric, int expectedValue) {
+    Optional<LiveMeasureDto> persisted = dbClient.liveMeasureDao().selectMeasure(db.getSession(),
+      componentUuid, metric.getKey());
+    assertThat(persisted).isPresent();
+    assertThat(persisted.get().getValue()).isEqualTo((double) expectedValue);
+  }
+
+  private void assertThatMeasureDoesNotExist(LiveMeasureDto template) {
+    assertThat(dbClient.liveMeasureDao().selectMeasure(db.getSession(),
+      template.getComponentUuid(), metricRepository.getById(template.getMetricId()).getKey()))
+        .isEmpty();
   }
 
   private void prepareProject() {
@@ -193,13 +234,13 @@ public class PersistMeasuresStepTest extends BaseStepTest {
           .build())
       .build();
     treeRootHolder.setRoot(project);
+    analysisMetadataHolder.setProject(Project.copyOf(project));
 
     // components as persisted in db
     ComponentDto projectDto = insertComponent("project-key", "project-uuid");
     ComponentDto moduleDto = insertComponent("module-key", "module-uuid");
     ComponentDto dirDto = insertComponent("dir-key", "dir-uuid");
     ComponentDto fileDto = insertComponent("file-key", "file-uuid");
-    db.components().insertSnapshot(projectDto, s -> s.setUuid(ANALYSIS_UUID));
   }
 
   private void preparePortfolio() {
@@ -215,28 +256,18 @@ public class PersistMeasuresStepTest extends BaseStepTest {
     treeRootHolder.setRoot(portfolio);
 
     // components as persisted in db
-    ComponentDto viewDto = insertComponent("view-key", "view-uuid");
+    ComponentDto portfolioDto = insertComponent("view-key", "view-uuid");
     ComponentDto subViewDto = insertComponent("subview-key", "subview-uuid");
     ComponentDto projectDto = insertComponent("project-key", "project-uuid");
-    db.components().insertSnapshot(viewDto, s -> s.setUuid(ANALYSIS_UUID));
+    analysisMetadataHolder.setProject(Project.copyOf(portfolioDto));
   }
 
   private void assertThatMeasureIsNotPersisted(String componentUuid, Metric metric) {
     assertThat(selectMeasure(componentUuid, metric)).isEmpty();
   }
 
-  private void assertThatMeasuresAreNotPersisted(String componentUuid) {
-    assertThatMeasureIsNotPersisted(componentUuid, STRING_METRIC);
-    assertThatMeasureIsNotPersisted(componentUuid, INT_METRIC);
-  }
-
-  private void execute(boolean persistDirectories) {
-    new PersistMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder), treeRootHolder, measureRepository, persistDirectories)
-      .execute();
-  }
-
-  private Optional<MeasureDto> selectMeasure(String componentUuid, Metric metric) {
-    return dbClient.measureDao().selectMeasure(db.getSession(), ANALYSIS_UUID, componentUuid, metric.getKey());
+  private Optional<LiveMeasureDto> selectMeasure(String componentUuid, Metric metric) {
+    return dbClient.liveMeasureDao().selectMeasure(db.getSession(), componentUuid, metric.getKey());
   }
 
   private ComponentDto insertComponent(String key, String uuid) {
@@ -253,6 +284,7 @@ public class PersistMeasuresStepTest extends BaseStepTest {
 
   @Override
   protected ComputationStep step() {
-    return new PersistMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder), treeRootHolder, measureRepository, true);
+    return new PersistLiveMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder), treeRootHolder, measureRepository);
   }
+
 }

@@ -68,6 +68,7 @@ public final class SqTables {
     "internal_properties",
     "issues",
     "issue_changes",
+    "live_measures",
     "loaded_templates",
     "manual_measures",
     "metrics",
