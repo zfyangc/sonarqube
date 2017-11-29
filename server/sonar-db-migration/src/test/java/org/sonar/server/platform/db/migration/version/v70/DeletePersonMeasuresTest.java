@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.db.CoreDbTester;
+import org.sonar.server.platform.db.migration.step.DataChange;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +34,7 @@ public class DeletePersonMeasuresTest {
   @Rule
   public CoreDbTester db = CoreDbTester.createForSchema(DeletePersonMeasuresTest.class, "initial.sql");
 
-  private DeletePersonMeasures underTest = new DeletePersonMeasures(db.database());
+  private DataChange underTest = new DeletePersonMeasures(db.database());
 
   @Test
   public void delete_measures_with_nonnull_person_id() throws Exception {
