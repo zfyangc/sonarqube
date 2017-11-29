@@ -27,6 +27,9 @@ public class DbVersion70 implements DbVersion {
   public void addSteps(MigrationStepRegistry registry) {
     registry
       .add(2000, "Create table live_measures", CreateTableLiveMeasures.class)
-      .add(2001, "Populate table live_measures", PopulateLiveMeasures.class);
+      .add(2001, "Populate table live_measures", PopulateLiveMeasures.class)
+      .add(2002, "Delete developer measures", DeletePersonMeasures.class)
+      .add(2003, "Drop index on project_measures.person_id", DropIndexOnPersonMeasures.class)
+    ;
   }
 }

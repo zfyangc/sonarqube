@@ -261,6 +261,10 @@ public class ComponentTreeAction implements MeasuresWsAction {
   }
 
   private ComponentTreeWsResponse doHandle(ComponentTreeRequest request) {
+    if (request.getDeveloperId() != null || request.getDeveloperKey() != null) {
+      return emptyResponse(null, request);
+    }
+
     ComponentTreeData data = load(request);
     if (data.getComponents() == null) {
       return emptyResponse(data.getBaseComponent(), request);
@@ -320,13 +324,15 @@ public class ComponentTreeAction implements MeasuresWsAction {
     return additionalFields != null && additionalFields.contains(ADDITIONAL_PERIODS);
   }
 
-  private static ComponentTreeWsResponse emptyResponse(ComponentDto baseComponent, ComponentTreeRequest request) {
+  private static ComponentTreeWsResponse emptyResponse(@Nullable ComponentDto baseComponent, ComponentTreeRequest request) {
     ComponentTreeWsResponse.Builder response = ComponentTreeWsResponse.newBuilder();
     response.getPagingBuilder()
       .setPageIndex(request.getPage())
       .setPageSize(request.getPageSize())
       .setTotal(0);
-    response.setBaseComponent(componentDtoToWsComponent(baseComponent));
+    if (baseComponent != null) {
+      response.setBaseComponent(componentDtoToWsComponent(baseComponent));
+    }
     return response.build();
   }
 
@@ -395,14 +401,13 @@ public class ComponentTreeAction implements MeasuresWsAction {
                 .setBaseComponent(baseComponent)
                 .build();
       }
-      Long developerId = searchDeveloperId(dbSession, wsRequest);
 
       ComponentTreeQuery componentTreeQuery = toComponentTreeQuery(wsRequest, baseComponent);
       List<ComponentDto> components = searchComponents(dbSession, componentTreeQuery);
       List<MetricDto> metrics = searchMetrics(dbSession, wsRequest);
       Table<String, MetricDto, ComponentTreeData.Measure> measuresByComponentUuidAndMetric = searchMeasuresByComponentUuidAndMetric(dbSession, baseComponent, componentTreeQuery,
               components,
-              metrics, developerId);
+              metrics);
 
       components = filterComponents(components, measuresByComponentUuidAndMetric, metrics, wsRequest);
       components = sortComponents(components, wsRequest, metrics, measuresByComponentUuidAndMetric);
@@ -430,15 +435,6 @@ public class ComponentTreeAction implements MeasuresWsAction {
     return branch == null
             ? componentFinder.getByUuidOrKey(dbSession, componentId, componentKey, BASE_COMPONENT_ID_AND_KEY)
             : componentFinder.getByKeyAndBranch(dbSession, componentKey, branch);
-  }
-
-  @CheckForNull
-  private Long searchDeveloperId(DbSession dbSession, ComponentTreeRequest wsRequest) {
-    if (wsRequest.getDeveloperId() == null && wsRequest.getDeveloperKey() == null) {
-      return null;
-    }
-
-    return componentFinder.getByUuidOrKey(dbSession, wsRequest.getDeveloperId(), wsRequest.getDeveloperKey(), DEVELOPER_ID_AND_KEY).getId();
   }
 
   private Map<String, ComponentDto> searchReferenceComponentsById(DbSession dbSession, List<ComponentDto> components) {
@@ -483,14 +479,13 @@ public class ComponentTreeAction implements MeasuresWsAction {
   }
 
   private Table<String, MetricDto, ComponentTreeData.Measure> searchMeasuresByComponentUuidAndMetric(DbSession dbSession, ComponentDto baseComponent,
-    ComponentTreeQuery componentTreeQuery, List<ComponentDto> components, List<MetricDto> metrics, @Nullable Long developerId) {
+    ComponentTreeQuery componentTreeQuery, List<ComponentDto> components, List<MetricDto> metrics) {
 
     Map<Integer, MetricDto> metricsById = Maps.uniqueIndex(metrics, MetricDto::getId);
     MeasureTreeQuery measureQuery = MeasureTreeQuery.builder()
             .setStrategy(MeasureTreeQuery.Strategy.valueOf(componentTreeQuery.getStrategy().name()))
             .setNameOrKeyQuery(componentTreeQuery.getNameOrKeyQuery())
             .setQualifiers(componentTreeQuery.getQualifiers())
-            .setPersonId(developerId)
             .setMetricIds(new ArrayList<>(metricsById.keySet()))
             .build();
 

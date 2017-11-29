@@ -60,8 +60,8 @@ class PurgeCommands {
     session.commit();
     profiler.stop();
 
-    List<List<String>> analysisUuidsPartitions = Lists.partition(IdUuidPairs.uuids(purgeMapper.selectAnalysisIdsAndUuids(new PurgeSnapshotQuery().setComponentUuid(rootComponentUuid))),
-      MAX_SNAPSHOTS_PER_QUERY);
+    List<List<String>> analysisUuidsPartitions = Lists.partition(IdUuidPairs.uuids(
+      purgeMapper.selectAnalysisIdsAndUuids(new PurgeSnapshotQuery().setComponentUuid(rootComponentUuid))), MAX_SNAPSHOTS_PER_QUERY);
 
     deleteAnalysisDuplications(analysisUuidsPartitions);
 
@@ -123,9 +123,11 @@ class PurgeCommands {
 
     profiler.start("deleteSnapshotWastedMeasures (project_measures)");
     List<Long> metricIdsWithoutHistoricalData = purgeMapper.selectMetricIdsWithoutHistoricalData();
-    analysisUuidsPartitions
-      .forEach(analysisUuidsPartition -> purgeMapper.deleteAnalysisWastedMeasures(analysisUuidsPartition, metricIdsWithoutHistoricalData));
-    session.commit();
+    if (!metricIdsWithoutHistoricalData.isEmpty()) {
+      analysisUuidsPartitions
+        .forEach(analysisUuidsPartition -> purgeMapper.deleteAnalysisWastedMeasures(analysisUuidsPartition, metricIdsWithoutHistoricalData));
+      session.commit();
+    }
     profiler.stop();
 
     profiler.start("updatePurgeStatusToOne (snapshots)");

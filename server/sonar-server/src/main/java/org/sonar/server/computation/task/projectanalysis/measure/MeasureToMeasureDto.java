@@ -24,19 +24,15 @@ import org.sonar.db.measure.LiveMeasureDto;
 import org.sonar.db.measure.MeasureDto;
 import org.sonar.server.computation.task.projectanalysis.analysis.AnalysisMetadataHolder;
 import org.sonar.server.computation.task.projectanalysis.component.Component;
-import org.sonar.server.computation.task.projectanalysis.component.DbIdsRepository;
-import org.sonar.server.computation.task.projectanalysis.component.Developer;
 import org.sonar.server.computation.task.projectanalysis.component.TreeRootHolder;
 import org.sonar.server.computation.task.projectanalysis.metric.Metric;
 
 public class MeasureToMeasureDto {
 
-  private final DbIdsRepository dbIdsRepository;
   private final AnalysisMetadataHolder analysisMetadataHolder;
   private final TreeRootHolder treeRootHolder;
 
-  public MeasureToMeasureDto(DbIdsRepository dbIdsRepository, AnalysisMetadataHolder analysisMetadataHolder, TreeRootHolder treeRootHolder) {
-    this.dbIdsRepository = dbIdsRepository;
+  public MeasureToMeasureDto(AnalysisMetadataHolder analysisMetadataHolder, TreeRootHolder treeRootHolder) {
     this.analysisMetadataHolder = analysisMetadataHolder;
     this.treeRootHolder = treeRootHolder;
   }
@@ -51,10 +47,6 @@ public class MeasureToMeasureDto {
     }
     if (measure.hasQualityGateStatus()) {
       setAlert(out, measure.getQualityGateStatus());
-    }
-    Developer developer = measure.getDeveloper();
-    if (developer != null) {
-      out.setDeveloperId(dbIdsRepository.getDeveloperId(developer));
     }
     out.setValue(valueAsDouble(measure));
     out.setData(data(measure));

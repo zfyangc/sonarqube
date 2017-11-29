@@ -17,40 +17,27 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.db.measure;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+package org.sonar.server.platform.db.migration.version.v70;
 
-import static java.util.Objects.requireNonNull;
+import org.junit.Test;
+import org.sonar.server.platform.db.migration.version.DbVersion;
 
-public class PastMeasureDto {
+import static org.sonar.server.platform.db.migration.version.DbVersionTestUtils.verifyMigrationCount;
+import static org.sonar.server.platform.db.migration.version.DbVersionTestUtils.verifyMinimumMigrationNumber;
 
-  private int metricId;
+public class DbVersion70Test {
 
-  @CheckForNull
-  private Double value;
+  private DbVersion underTest = new DbVersion70();
 
-  public double getValue() {
-    requireNonNull(value);
-    return value;
+  @Test
+  public void migrationNumber_starts_at_2000() {
+    verifyMinimumMigrationNumber(underTest, 2000);
   }
 
-  PastMeasureDto setValue(@Nullable Double value) {
-    this.value = value;
-    return this;
+  @Test
+  public void verify_migration_count() {
+    verifyMigrationCount(underTest, 4);
   }
 
-  public boolean hasValue() {
-    return value != null;
-  }
-
-  public int getMetricId() {
-    return metricId;
-  }
-
-  PastMeasureDto setMetricId(int i) {
-    this.metricId = i;
-    return this;
-  }
 }

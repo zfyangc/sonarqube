@@ -5,7 +5,6 @@
 
   <sql id="measureColumns">
     pm.metric_id as metricId,
-    pm.person_id as developerId,
     pm.component_uuid as componentUuid,
     pm.analysis_uuid as analysisUuid,
     pm.value as value,
@@ -35,8 +34,7 @@
     where
     pm.component_uuid = #{componentUuid,jdbcType=VARCHAR} and
     m.name = #{metricKey,jdbcType=VARCHAR} and
-    s.uuid = #{analysisUuid,jdbcType=VARCHAR} and
-    s.status = 'P'
+    s.uuid = #{analysisUuid,jdbcType=VARCHAR}
   </select>
 
   <select id="selectByQueryOnProjects" parameterType="map" resultType="Measure">
@@ -97,25 +95,16 @@
         #{metricKey,jdbcType=VARCHAR}
       </foreach>
     </if>
-    <choose>
-      <when test="query.getPersonId() != null">
-        and pm.person_id = #{query.personId,jdbcType=BIGINT}
-      </when>
-      <otherwise>
-        and pm.person_id is null
-      </otherwise>
-    </choose>
   </sql>
 
   <select id="selectPastMeasuresOnSingleAnalysis" parameterType="map" resultType="org.sonar.db.measure.PastMeasureDto">
-    select pm.id as id, pm.metric_id as metricId, pm.person_id as personId, pm.value as value
+    select pm.id as id, pm.metric_id as metricId, pm.value as value
     from project_measures pm
     inner join snapshots analysis on analysis.uuid = pm.analysis_uuid
     where
       pm.component_uuid = #{componentUuid,jdbcType=VARCHAR}
       and analysis.uuid = #{analysisUuid,jdbcType=VARCHAR}
       and pm.metric_id in <foreach item="metricId" collection="metricIds" open="(" separator="," close=")">#{metricId}</foreach>
-      and pm.person_id is null
   </select>
 
   <select id="selectPastMeasuresOnSeveralAnalyses" parameterType="map" resultType="Measure">
@@ -131,7 +120,6 @@
       and analysis.created_at&lt;#{query.to, jdbcType=BIGINT}
     </if>
     and pm.metric_id in <foreach item="metricId" collection="query.metricIds" open="(" separator="," close=")">#{metricId, jdbcType=VARCHAR}</foreach>
-    and pm.person_id is null
     and analysis.status=#{query.status, jdbcType=VARCHAR}
   </select>
 
@@ -144,7 +132,6 @@
     text_value,
     alert_status,
     alert_text,
-    person_id,
     variation_value_1,
     measure_data)
     VALUES (
@@ -155,7 +142,6 @@
     #{textValue, jdbcType=VARCHAR},
     #{alertStatus, jdbcType=VARCHAR},
     #{alertText, jdbcType=VARCHAR},
-    #{developerId, jdbcType=INTEGER},
     #{variation, jdbcType=DOUBLE},
     #{dataValue, jdbcType=BINARY}
     )

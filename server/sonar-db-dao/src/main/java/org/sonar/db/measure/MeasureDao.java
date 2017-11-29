@@ -47,10 +47,6 @@ public class MeasureDao implements Dao {
    * - A list of components in {@link MeasureQuery#componentUuids} with one mandatory project in {@link MeasureQuery#projectUuids}
    * - One single component in  {@link MeasureQuery#componentUuids}
    * <p>
-   * In addition, this method returns measures which are not associated to any developer, unless one is specified in
-   * {@link MeasureQuery#personId}.
-   * </p>
-   * <p>
    * Returned measure can optionally be filtered metric (either by specifying {@link MeasureQuery#metricIds}
    * or {@link MeasureQuery#metricKeys}).
    * </p>

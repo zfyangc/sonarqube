@@ -50,7 +50,6 @@ public class MeasureTesting {
       .setMetricId(cursor++)
       .setComponentUuid(String.valueOf(cursor++))
       .setAnalysisUuid(String.valueOf(cursor++))
-      .setDeveloperId(null)
       .setData(String.valueOf(cursor++))
       .setAlertStatus(String.valueOf(cursor++))
       .setAlertText(String.valueOf(cursor++))

@@ -32,7 +32,6 @@ import org.sonar.db.measure.MeasureDto;
 import org.sonar.db.metric.MetricDto;
 import org.sonar.server.computation.task.projectanalysis.analysis.MutableAnalysisMetadataHolderRule;
 import org.sonar.server.computation.task.projectanalysis.component.Component;
-import org.sonar.server.computation.task.projectanalysis.component.MutableDbIdsRepositoryRule;
 import org.sonar.server.computation.task.projectanalysis.component.ReportComponent;
 import org.sonar.server.computation.task.projectanalysis.component.TreeRootHolderRule;
 import org.sonar.server.computation.task.projectanalysis.component.ViewsComponent;
@@ -73,8 +72,6 @@ public class PersistMeasuresStepTest extends BaseStepTest {
   public MetricRepositoryRule metricRepository = new MetricRepositoryRule();
   @Rule
   public MeasureRepositoryRule measureRepository = MeasureRepositoryRule.create(treeRootHolder, metricRepository);
-  @Rule
-  public MutableDbIdsRepositoryRule dbIdsRepository = MutableDbIdsRepositoryRule.create(treeRootHolder);
   @Rule
   public MutableAnalysisMetadataHolderRule analysisMetadataHolder = new MutableAnalysisMetadataHolderRule();
 
@@ -199,13 +196,9 @@ public class PersistMeasuresStepTest extends BaseStepTest {
 
     // components as persisted in db
     ComponentDto projectDto = insertComponent("project-key", "project-uuid");
-    associateDbId(REF_1, projectDto.getId());
     ComponentDto moduleDto = insertComponent("module-key", "module-uuid");
-    associateDbId(REF_2, moduleDto.getId());
     ComponentDto dirDto = insertComponent("dir-key", "dir-uuid");
-    associateDbId(REF_3, dirDto.getId());
     ComponentDto fileDto = insertComponent("file-key", "file-uuid");
-    associateDbId(REF_4, fileDto.getId());
     db.components().insertSnapshot(projectDto, s -> s.setUuid(ANALYSIS_UUID));
   }
 
@@ -223,11 +216,8 @@ public class PersistMeasuresStepTest extends BaseStepTest {
 
     // components as persisted in db
     ComponentDto viewDto = insertComponent("view-key", "view-uuid");
-    associateDbId(REF_1, viewDto.getId());
     ComponentDto subViewDto = insertComponent("subview-key", "subview-uuid");
-    associateDbId(REF_2, subViewDto.getId());
     ComponentDto projectDto = insertComponent("project-key", "project-uuid");
-    associateDbId(REF_3, projectDto.getId());
     db.components().insertSnapshot(viewDto, s -> s.setUuid(ANALYSIS_UUID));
   }
 
@@ -241,16 +231,12 @@ public class PersistMeasuresStepTest extends BaseStepTest {
   }
 
   private void execute(boolean persistDirectories) {
-    new PersistMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(dbIdsRepository, analysisMetadataHolder), treeRootHolder, measureRepository, persistDirectories)
+    new PersistMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder), treeRootHolder, measureRepository, persistDirectories)
       .execute();
   }
 
   private Optional<MeasureDto> selectMeasure(String componentUuid, Metric metric) {
     return dbClient.measureDao().selectMeasure(db.getSession(), ANALYSIS_UUID, componentUuid, metric.getKey());
-  }
-
-  private void associateDbId(int componentRef, long dbId) {
-    dbIdsRepository.setComponentId(componentRef, dbId);
   }
 
   private ComponentDto insertComponent(String key, String uuid) {
@@ -267,6 +253,6 @@ public class PersistMeasuresStepTest extends BaseStepTest {
 
   @Override
   protected ComputationStep step() {
-    return new PersistMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(dbIdsRepository, analysisMetadataHolder), treeRootHolder, measureRepository, true);
+    return new PersistMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder), treeRootHolder, measureRepository, true);
   }
 }

@@ -17,40 +17,24 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.db.measure;
+package org.sonar.server.platform.db.migration.version.v70;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import java.sql.SQLException;
+import org.sonar.db.Database;
+import org.sonar.server.platform.db.migration.sql.DropIndexBuilder;
+import org.sonar.server.platform.db.migration.step.DdlChange;
 
-import static java.util.Objects.requireNonNull;
+public class DropIndexOnPersonMeasures extends DdlChange {
 
-public class PastMeasureDto {
-
-  private int metricId;
-
-  @CheckForNull
-  private Double value;
-
-  public double getValue() {
-    requireNonNull(value);
-    return value;
+  public DropIndexOnPersonMeasures(Database db) {
+    super(db);
   }
 
-  PastMeasureDto setValue(@Nullable Double value) {
-    this.value = value;
-    return this;
-  }
-
-  public boolean hasValue() {
-    return value != null;
-  }
-
-  public int getMetricId() {
-    return metricId;
-  }
-
-  PastMeasureDto setMetricId(int i) {
-    this.metricId = i;
-    return this;
+  @Override
+  public void execute(Context context) throws SQLException {
+    context.execute(new DropIndexBuilder(getDialect())
+      .setTable("project_measures")
+      .setName("measures_person")
+      .build());
   }
 }

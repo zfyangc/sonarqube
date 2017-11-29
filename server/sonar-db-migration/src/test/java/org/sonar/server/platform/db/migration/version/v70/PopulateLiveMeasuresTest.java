@@ -90,7 +90,7 @@ public class PopulateLiveMeasuresTest {
   }
 
   private void generateProjectMeasures() {
-    HashMap<String, Object> project = new HashMap<>();
+    Map<String, Object> project = new HashMap<>();
     project.put("UUID", "PRJ1");
     project.put("ORGANIZATION_UUID", "ORG1");
     project.put("UUID_PATH", "X");
@@ -99,25 +99,25 @@ public class PopulateLiveMeasuresTest {
     project.put("PRIVATE", "FALSE");
     db.executeInsert("PROJECTS", project);
 
-    HashMap<String, Object> analysis1 = new HashMap<>();
+    Map<String, Object> analysis1 = new HashMap<>();
     analysis1.put("UUID", "A1");
     analysis1.put("ISLAST", "FALSE");
     analysis1.put("COMPONENT_UUID", "PRJ1");
     db.executeInsert("SNAPSHOTS", analysis1);
 
-    HashMap<String, Object> analysis2 = new HashMap<>();
+    Map<String, Object> analysis2 = new HashMap<>();
     analysis2.put("UUID", "A2");
     analysis2.put("ISLAST", "TRUE");
     analysis2.put("COMPONENT_UUID", "PRJ1");
     db.executeInsert("SNAPSHOTS", analysis2);
 
-    HashMap<String, Object> measure1 = new HashMap<>();
+    Map<String, Object> measure1 = new HashMap<>();
     measure1.put("COMPONENT_UUID", "PRJ1");
     measure1.put("ANALYSIS_UUID", "A1");
     measure1.put("METRIC_ID", "123");
     db.executeInsert("PROJECT_MEASURES", measure1);
 
-    HashMap<String, Object> measure2 = new HashMap<>();
+    Map<String, Object> measure2 = new HashMap<>();
     measure2.put("COMPONENT_UUID", "PRJ1");
     measure2.put("ANALYSIS_UUID", "A2");
     measure2.put("METRIC_ID", "123");

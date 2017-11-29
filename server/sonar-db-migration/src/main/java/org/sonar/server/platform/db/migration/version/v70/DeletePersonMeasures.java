@@ -17,40 +17,27 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.db.measure;
+package org.sonar.server.platform.db.migration.version.v70;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import java.sql.SQLException;
+import org.sonar.db.Database;
+import org.sonar.server.platform.db.migration.step.DataChange;
+import org.sonar.server.platform.db.migration.step.MassUpdate;
 
-import static java.util.Objects.requireNonNull;
-
-public class PastMeasureDto {
-
-  private int metricId;
-
-  @CheckForNull
-  private Double value;
-
-  public double getValue() {
-    requireNonNull(value);
-    return value;
+public class DeletePersonMeasures extends DataChange {
+  public DeletePersonMeasures(Database db) {
+    super(db);
   }
 
-  PastMeasureDto setValue(@Nullable Double value) {
-    this.value = value;
-    return this;
-  }
-
-  public boolean hasValue() {
-    return value != null;
-  }
-
-  public int getMetricId() {
-    return metricId;
-  }
-
-  PastMeasureDto setMetricId(int i) {
-    this.metricId = i;
-    return this;
+  @Override
+  protected void execute(Context context) throws SQLException {
+    MassUpdate massUpdate = context.prepareMassUpdate();
+    massUpdate.select("select id from project_measures where person_id is not null");
+    massUpdate.rowPluralName("person measures");
+    massUpdate.update("delete from project_measures where id = ?");
+    massUpdate.execute((row, update) -> {
+      update.setLong(1, row.getLong(1));
+      return true;
+    });
   }
 }
