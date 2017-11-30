@@ -19,10 +19,8 @@
  */
 package org.sonarqube.ws.client.component;
 
-import com.google.common.base.Joiner;
 import java.util.List;
 import org.sonarqube.ws.Components.SearchProjectsWsResponse;
-import org.sonarqube.ws.Components.SearchWsResponse;
 import org.sonarqube.ws.Components.ShowWsResponse;
 import org.sonarqube.ws.Components.TreeWsResponse;
 import org.sonarqube.ws.client.BaseService;
@@ -30,7 +28,6 @@ import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.WsConnector;
 
 import static org.sonar.api.server.ws.WebService.Param;
-import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SEARCH;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SEARCH_PROJECTS;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SHOW;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_TREE;
@@ -51,16 +48,6 @@ public class ComponentsService extends BaseService {
 
   public ComponentsService(WsConnector wsConnector) {
     super(wsConnector, CONTROLLER_COMPONENTS);
-  }
-
-  public SearchWsResponse search(SearchRequest request) {
-    GetRequest get = new GetRequest(path(ACTION_SEARCH))
-      .setParam(PARAM_ORGANIZATION, request.getOrganization())
-      .setParam(PARAM_QUALIFIERS, Joiner.on(",").join(request.getQualifiers()))
-      .setParam(Param.PAGE, request.getPage())
-      .setParam(Param.PAGE_SIZE, request.getPageSize())
-      .setParam(Param.TEXT_QUERY, request.getQuery());
-    return call(get, SearchWsResponse.parser());
   }
 
   public TreeWsResponse tree(TreeRequest request) {

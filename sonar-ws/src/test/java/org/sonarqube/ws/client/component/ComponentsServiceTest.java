@@ -108,30 +108,6 @@ public class ComponentsServiceTest {
   }
 
   @Test
-  public void search() {
-    String organization = randomAlphanumeric(20);
-    int page = 17;
-    int pageSize = 39;
-    String textQuery = randomAlphanumeric(20);
-    underTest.search(new SearchRequest()
-      .setOrganization(organization)
-      .setQualifiers(asList("q1", "q2"))
-      .setPage(page)
-      .setPageSize(pageSize)
-      .setQuery(textQuery));
-
-    assertThat(serviceTester.getGetParser()).isSameAs(Components.SearchWsResponse.parser());
-    serviceTester.assertThat(serviceTester.getGetRequest())
-      .hasPath("search")
-      .hasParam("organization", organization)
-      .hasParam("qualifiers", "q1,q2")
-      .hasParam("p", page)
-      .hasParam("ps", pageSize)
-      .hasParam("q", textQuery)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void tree() {
     String componentId = randomAlphanumeric(20);
     String componentKey = randomAlphanumeric(20);
