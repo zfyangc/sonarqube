@@ -28,7 +28,6 @@ public class LiveMeasureDto {
 
   private static final int MAX_TEXT_VALUE_LENGTH = 4000;
 
-  private String uuid;
   private String componentUuid;
   private String projectUuid;
   private int metricId;
@@ -40,14 +39,6 @@ public class LiveMeasureDto {
   private byte[] data;
   @Nullable
   private Double variation;
-
-  void setUuid(String s) {
-    this.uuid = s;
-  }
-
-  public String getUuid() {
-    return uuid;
-  }
 
   public String getComponentUuid() {
     return componentUuid;
@@ -137,14 +128,13 @@ public class LiveMeasureDto {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder("LiveMeasureDto{");
-    sb.append("uuid='").append(uuid).append('\'');
-    sb.append(", componentUuid='").append(componentUuid).append('\'');
+    sb.append("componentUuid='").append(componentUuid).append('\'');
     sb.append(", projectUuid='").append(projectUuid).append('\'');
     sb.append(", metricId=").append(metricId);
     sb.append(", value=").append(value);
+    sb.append(", variation=").append(variation);
     sb.append(", textValue='").append(textValue).append('\'');
     sb.append(", data=").append(Arrays.toString(data));
-    sb.append(", variation=").append(variation);
     sb.append('}');
     return sb.toString();
   }

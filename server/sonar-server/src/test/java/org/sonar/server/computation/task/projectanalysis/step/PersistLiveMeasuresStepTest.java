@@ -196,7 +196,7 @@ public class PersistLiveMeasuresStepTest extends BaseStepTest {
       .setComponentUuid(componentUuid)
       .setProjectUuid(projectUuid)
       .setMetricId(metricRepository.getByKey(metric.getKey()).getId());
-    dbClient.liveMeasureDao().insertOrUpdate(db.getSession(), measure);
+    dbClient.liveMeasureDao().insertOrUpdate(db.getSession(), measure, null);
     return measure;
   }
 

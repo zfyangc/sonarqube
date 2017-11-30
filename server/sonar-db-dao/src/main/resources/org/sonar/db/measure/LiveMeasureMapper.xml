@@ -4,7 +4,6 @@
 <mapper namespace="org.sonar.db.measure.LiveMeasureMapper">
 
   <sql id="columns">
-    lm.uuid as uuid,
     lm.component_uuid as componentUuid,
     lm.project_uuid as projectUuid,
     lm.metric_id as metricId,
@@ -45,10 +44,11 @@
     text_value,
     variation,
     measure_data,
+    update_marker,
     created_at,
     updated_at
     ) values (
-    #{dto.uuid, jdbcType=VARCHAR},
+    #{uuid, jdbcType=VARCHAR},
     #{dto.componentUuid, jdbcType=VARCHAR},
     #{dto.projectUuid, jdbcType=VARCHAR},
     #{dto.metricId, jdbcType=INTEGER},
@@ -56,6 +56,7 @@
     #{dto.textValue, jdbcType=VARCHAR},
     #{dto.variation, jdbcType=DOUBLE},
     #{dto.data, jdbcType=BINARY},
+    #{marker, jdbcType=VARCHAR},
     #{now, jdbcType=BIGINT},
     #{now, jdbcType=BIGINT}
     )
@@ -67,13 +68,18 @@
     variation = #{dto.variation, jdbcType=DOUBLE},
     text_value = #{dto.textValue, jdbcType=VARCHAR},
     measure_data  = #{dto.data, jdbcType=BINARY},
+    update_marker = #{marker, jdbcType=VARCHAR},
     updated_at = #{now, jdbcType=BIGINT}
-    where uuid = #{dto.uuid, jdbcType=VARCHAR}
+    where
+    component_uuid = #{dto.componentUuid, jdbcType=VARCHAR}
+    and metric_id = #{dto.metricId, jdbcType=INTEGER}
   </update>
 
-  <delete id="deleteByProjectUuid" parameterType="String">
+  <delete id="deleteByProjectUuidExcludingMarker" parameterType="map">
     delete from live_measures
-    where project_uuid = #{projectUuid, jdbcType=VARCHAR}
+    where
+    project_uuid = #{projectUuid, jdbcType=VARCHAR} and
+    (update_marker != #{marker, jdbcType=VARCHAR} or update_marker is null)
   </delete>
 
   <select id="selectTreeByQuery" parameterType="map" resultType="org.sonar.db.measure.LiveMeasureDto" fetchSize="${_scrollFetchSize}" resultSetType="FORWARD_ONLY">

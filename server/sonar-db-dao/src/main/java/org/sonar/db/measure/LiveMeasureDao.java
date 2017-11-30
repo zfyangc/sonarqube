@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import org.apache.ibatis.session.ResultHandler;
 import org.sonar.api.utils.System2;
 import org.sonar.core.util.Uuids;
@@ -78,25 +79,19 @@ public class LiveMeasureDao implements Dao {
   }
 
   public void insert(DbSession dbSession, LiveMeasureDto dto) {
-    if (dto.getUuid() != null) {
-      throw new IllegalArgumentException("Inserting a LiveMeasureDto that has already a uuid");
-    }
-    dto.setUuid(Uuids.create());
-    mapper(dbSession).insert(dto, system2.now());
+    mapper(dbSession).insert(dto, Uuids.create(), null, system2.now());
   }
 
-  public boolean update(DbSession dbSession, LiveMeasureDto dto) {
-    return mapper(dbSession).update(dto, system2.now()) == 1;
-  }
-
-  public void insertOrUpdate(DbSession dbSession, LiveMeasureDto dto) {
-    if (!update(dbSession, dto)) {
-      insert(dbSession, dto);
+  public void insertOrUpdate(DbSession dbSession, LiveMeasureDto dto, @Nullable String marker) {
+    LiveMeasureMapper mapper = mapper(dbSession);
+    long now = system2.now();
+    if (mapper.update(dto, marker, now) == 0) {
+      mapper.insert(dto, Uuids.create(), marker, now);
     }
   }
 
-  public void deleteByProjectUuid(DbSession dbSession, String projectUuid) {
-    mapper(dbSession).deleteByProjectUuid(projectUuid);
+  public void deleteByProjectUuidExcludingMarker(DbSession dbSession, String projectUuid, String marker) {
+    mapper(dbSession).deleteByProjectUuidExcludingMarker(projectUuid, marker);
   }
 
   private static LiveMeasureMapper mapper(DbSession dbSession) {

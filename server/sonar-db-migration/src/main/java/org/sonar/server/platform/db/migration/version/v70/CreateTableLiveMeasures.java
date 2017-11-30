@@ -30,6 +30,7 @@ import static org.sonar.server.platform.db.migration.def.BigIntegerColumnDef.new
 import static org.sonar.server.platform.db.migration.def.BlobColumnDef.newBlobColumnDefBuilder;
 import static org.sonar.server.platform.db.migration.def.DecimalColumnDef.newDecimalColumnDefBuilder;
 import static org.sonar.server.platform.db.migration.def.IntegerColumnDef.newIntegerColumnDefBuilder;
+import static org.sonar.server.platform.db.migration.def.VarcharColumnDef.UUID_SIZE;
 import static org.sonar.server.platform.db.migration.def.VarcharColumnDef.newVarcharColumnDefBuilder;
 
 public class CreateTableLiveMeasures extends DdlChange {
@@ -79,6 +80,11 @@ public class CreateTableLiveMeasures extends DdlChange {
         .build())
       .addColumn(newBlobColumnDefBuilder()
         .setColumnName("measure_data")
+        .build())
+      .addColumn(newVarcharColumnDefBuilder()
+        .setColumnName("update_marker")
+        .setIsNullable(true)
+        .setLimit(UUID_SIZE)
         .build())
       .addColumn(newBigIntegerColumnDefBuilder()
         .setColumnName("created_at")

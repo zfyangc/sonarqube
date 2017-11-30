@@ -61,7 +61,6 @@ public class MeasureToMeasureDto {
     if (measure.hasVariation()) {
       out.setVariation(measure.getVariation());
     }
-
     out.setValue(valueAsDouble(measure));
     out.setData(data(measure));
     return out;

@@ -46,9 +46,10 @@ public class CreateTableLiveMeasuresTest {
     db.assertColumnDefinition(TABLE, "component_uuid", Types.VARCHAR, 50, false);
     db.assertColumnDefinition(TABLE, "metric_id", Types.INTEGER, null, false);
     db.assertColumnDefinition(TABLE, "value", Types.DOUBLE, null, true);
-    db.assertColumnDefinition(TABLE, "text_value", Types.VARCHAR, 4000, true);
+    db.assertColumnDefinition(TABLE, "text_value", Types.VARCHAR, 4_000, true);
     db.assertColumnDefinition(TABLE, "variation", Types.DOUBLE, null, true);
     db.assertColumnDefinition(TABLE, "measure_data", Types.BLOB, null, true);
+    db.assertColumnDefinition(TABLE, "update_marker", Types.VARCHAR, 40, true);
     db.assertColumnDefinition(TABLE, "created_at", Types.BIGINT, null, false);
     db.assertColumnDefinition(TABLE, "updated_at", Types.BIGINT, null, false);
 

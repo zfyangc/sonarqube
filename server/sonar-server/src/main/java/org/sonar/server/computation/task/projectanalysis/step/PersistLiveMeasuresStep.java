@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
+import org.sonar.core.util.Uuids;
 import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.measure.LiveMeasureDao;
-import org.sonar.db.measure.LiveMeasureDto;
 import org.sonar.server.computation.task.projectanalysis.component.Component;
 import org.sonar.server.computation.task.projectanalysis.component.CrawlerDepthLimit;
 import org.sonar.server.computation.task.projectanalysis.component.DepthTraversalTypeAwareCrawler;
@@ -82,40 +82,43 @@ public class PersistLiveMeasuresStep implements ComputationStep {
 
   @Override
   public void execute() {
-    try (DbSession dbSession = dbClient.openSession(true)) {
-      dbClient.liveMeasureDao().deleteByProjectUuid(dbSession, treeRootHolder.getRoot().getUuid());
-      new DepthTraversalTypeAwareCrawler(new MeasureVisitor(dbSession)).visit(treeRootHolder.getRoot());
+    try (DbSession dbSession = dbClient.openSession(false)) {
+      String marker = Uuids.create();
+      Component root = treeRootHolder.getRoot();
+      new DepthTraversalTypeAwareCrawler(new MeasureVisitor(dbSession, marker)).visit(root);
+      dbClient.liveMeasureDao().deleteByProjectUuidExcludingMarker(dbSession, root.getUuid(), marker);
       dbSession.commit();
     }
   }
 
   private class MeasureVisitor extends TypeAwareVisitorAdapter {
-    private final DbSession session;
+    private final DbSession dbSession;
+    private final String marker;
 
-    private MeasureVisitor(DbSession session) {
+    private MeasureVisitor(DbSession dbSession, String marker) {
       super(CrawlerDepthLimit.LEAVES, PRE_ORDER);
-      this.session = session;
+      this.dbSession = dbSession;
+      this.marker = marker;
     }
 
     @Override
     public void visitAny(Component component) {
+      LiveMeasureDao dao = dbClient.liveMeasureDao();
       Multimap<String, Measure> measures = measureRepository.getRawMeasures(component);
       for (Map.Entry<String, Collection<Measure>> measuresByMetricKey : measures.asMap().entrySet()) {
         String metricKey = measuresByMetricKey.getKey();
         if (NOT_TO_PERSIST_ON_FILE_METRIC_KEYS.contains(metricKey) && component.getType() == Component.Type.FILE) {
           continue;
         }
-
         Metric metric = metricRepository.getByKey(metricKey);
         Predicate<Measure> notBestValueOptimized = BestValueOptimization.from(metric, component).negate();
-        LiveMeasureDao dao = dbClient.liveMeasureDao();
-        measuresByMetricKey.getValue().stream().filter(NonEmptyMeasure.INSTANCE).filter(notBestValueOptimized).forEach(measure -> {
-          LiveMeasureDto dto = measureToMeasureDto.toLiveMeasureDto(measure, metric, component);
-          dao.insert(session, dto);
-        });
+        measuresByMetricKey.getValue().stream()
+          .filter(NonEmptyMeasure.INSTANCE)
+          .filter(notBestValueOptimized)
+          .map(measure -> measureToMeasureDto.toLiveMeasureDto(measure, metric, component))
+          .forEach(dto -> dao.insertOrUpdate(dbSession, dto, marker));
       }
     }
-
   }
 
   private enum NonEmptyMeasure implements Predicate<Measure> {

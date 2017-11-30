@@ -21,6 +21,7 @@ package org.sonar.db.measure;
 
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.ResultHandler;
 
@@ -42,12 +43,16 @@ public interface LiveMeasureMapper {
 
   void insert(
     @Param("dto") LiveMeasureDto dto,
+    @Param("uuid") String uuid,
+    @Nullable @Param("marker") String marker,
     @Param("now") long now);
 
   int update(
     @Param("dto") LiveMeasureDto dto,
+    @Nullable @Param("marker") String marker,
     @Param("now") long now);
 
-  void deleteByProjectUuid(
-    @Param("projectUuid") String projectUuid);
+  void deleteByProjectUuidExcludingMarker(
+    @Param("projectUuid") String projectUuid,
+    @Param("marker") String marker);
 }
