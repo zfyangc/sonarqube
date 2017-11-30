@@ -21,7 +21,6 @@ package org.sonarqube.ws.client.component;
 
 import com.google.common.base.Joiner;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonarqube.ws.Components.SearchProjectsWsResponse;
 import org.sonarqube.ws.Components.SearchWsResponse;
 import org.sonarqube.ws.Components.ShowWsResponse;
@@ -29,13 +28,11 @@ import org.sonarqube.ws.Components.TreeWsResponse;
 import org.sonarqube.ws.client.BaseService;
 import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.WsConnector;
-import org.sonarqube.ws.client.WsResponse;
 
 import static org.sonar.api.server.ws.WebService.Param;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SEARCH;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SEARCH_PROJECTS;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SHOW;
-import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SUGGESTIONS;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_TREE;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.CONTROLLER_COMPONENTS;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_BRANCH;
@@ -102,13 +99,5 @@ public class ComponentsService extends BaseService {
       .setParam(Param.PAGE_SIZE, request.getPageSize())
       .setParam(Param.FIELDS, !additionalFields.isEmpty() ? inlineMultipleParamValue(additionalFields) : null);
     return call(get, SearchProjectsWsResponse.parser());
-  }
-
-  public WsResponse suggestions(SuggestionsRequest request) {
-    GetRequest get = new GetRequest(path(ACTION_SUGGESTIONS))
-      .setParam("more", request.getMore() == null ? null : request.getMore().toString())
-      .setParam("recentlyBrowsed", request.getRecentlyBrowsed().stream().collect(Collectors.joining(",")))
-      .setParam("s", request.getS());
-    return call(get);
   }
 }

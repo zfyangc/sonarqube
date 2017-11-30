@@ -108,27 +108,6 @@ public class ComponentsServiceTest {
   }
 
   @Test
-  public void suggestions() {
-    SuggestionsRequest.More more = SuggestionsRequest.More.BRC;
-    String s = randomAlphanumeric(20);
-    underTest.suggestions(SuggestionsRequest.builder()
-      .setMore(more)
-      .setS(s)
-      .setRecentlyBrowsed(asList("key-1", "key-2"))
-      .build());
-
-    // in this case no protobuf parser is used
-    assertThat(serviceTester.getGetParser()).isNull();
-
-    serviceTester.assertThat(serviceTester.getGetRequest())
-      .hasPath("suggestions")
-      .hasParam("more", more.toString())
-      .hasParam("s", s)
-      .hasParam("recentlyBrowsed", "key-1,key-2")
-      .andNoOtherParam();
-  }
-
-  @Test
   public void search() {
     String organization = randomAlphanumeric(20);
     int page = 17;
