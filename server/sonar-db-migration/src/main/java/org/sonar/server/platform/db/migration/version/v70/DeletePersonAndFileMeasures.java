@@ -29,16 +29,15 @@ import org.sonar.db.dialect.PostgreSql;
 import org.sonar.server.platform.db.migration.step.DataChange;
 import org.sonar.server.platform.db.migration.step.MassUpdate;
 
-public class DeleteFileMeasures extends DataChange {
-
-  public DeleteFileMeasures(Database db) {
+public class DeletePersonAndFileMeasures extends DataChange {
+  public DeletePersonAndFileMeasures(Database db) {
     super(db);
   }
 
   @Override
   protected void execute(Context context) throws SQLException {
     MassUpdate massUpdate = context.prepareMassUpdate();
-    massUpdate.select("select s.uuid from snapshots s");
+    massUpdate.select("select uuid from snapshots");
     massUpdate.rowPluralName("snapshots");
     massUpdate.update(getDeleteSql());
 
@@ -54,26 +53,28 @@ public class DeleteFileMeasures extends DataChange {
       case MsSql.ID:
         return "delete pm from project_measures pm " +
           "inner join projects c on c.uuid = pm.component_uuid " +
-          "where pm.analysis_uuid = ? and c.qualifier in ('UTS', 'FIL')";
+          "where pm.analysis_uuid = ? " +
+          "and (c.qualifier in ('UTS', 'FIL') or pm.person_id is not null)";
       case H2.ID:
         return "delete from project_measures " +
           "where id in ( " +
           "  select pm.id from project_measures pm " +
           "  inner join projects c on c.uuid = pm.component_uuid " +
-          "  where pm.analysis_uuid = ? and c.qualifier in ('UTS', 'FIL') " +
+          "  where pm.analysis_uuid = ? " +
+          "  and (c.qualifier in ('UTS', 'FIL') or pm.person_id is not null) " +
           ")";
       case PostgreSql.ID:
         return "delete from project_measures pm " +
           "using projects c " +
           "where pm.analysis_uuid = ? " +
           "and c.uuid = pm.component_uuid " +
-          "and c.qualifier in ('UTS', 'FIL')";
+          "and (c.qualifier in ('UTS', 'FIL') or pm.person_id is not null) ";
       case Oracle.ID:
         return "delete from project_measures pm where exists (" +
           "  select 1 from project_measures pm2 " +
           "  inner join projects c on c.uuid = pm2.component_uuid " +
           "  where pm2.analysis_uuid = ? " +
-          "  and c.qualifier in ('UTS', 'FIL')" +
+          "  and (c.qualifier in ('UTS', 'FIL') or pm.person_id is not null) " +
           "  and pm.id = pm2.id" +
           ")";
       default:
