@@ -33,7 +33,7 @@ export interface User {
   name: string;
   active: boolean;
   email?: string;
-  scmAccounts: string[];
+  scmAccounts?: string[];
   groups?: string[];
   tokensCount?: number;
   local: boolean;

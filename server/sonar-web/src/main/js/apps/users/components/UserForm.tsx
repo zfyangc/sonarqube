@@ -54,7 +54,7 @@ export default class UserForm extends React.PureComponent<Props, State> {
         login: user.login,
         name: user.name,
         password: '',
-        scmAccounts: user.scmAccounts,
+        scmAccounts: user.scmAccounts || [],
         submitting: false
       };
     } else {
