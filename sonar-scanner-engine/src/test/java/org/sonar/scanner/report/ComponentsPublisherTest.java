@@ -152,6 +152,9 @@ public class ComponentsPublisherTest {
     assertThat(reader.readComponent(4).getStatus()).isEqualTo(FileStatus.SAME);
     assertThat(reader.readComponent(6).getStatus()).isEqualTo(FileStatus.CHANGED);
     assertThat(reader.readComponent(7).getStatus()).isEqualTo(FileStatus.ADDED);
+
+    assertThat(reader.readComponent(3).getProjectRelativePath()).isEmpty();
+    assertThat(reader.readComponent(4).getProjectRelativePath()).isEqualTo(file.getProjectRelativePath());
   }
 
   @Test

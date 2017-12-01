@@ -112,6 +112,7 @@ public class ComponentsPublisher implements ReportPublisherStep {
       builder.setIsTest(file.type() == InputFile.Type.TEST);
       builder.setLines(file.lines());
       builder.setStatus(convert(file.status()));
+      builder.setProjectRelativePath(file.getProjectRelativePath());
 
       String lang = getLanguageKey(file);
       if (lang != null) {

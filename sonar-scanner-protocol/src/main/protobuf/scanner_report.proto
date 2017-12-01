@@ -111,6 +111,8 @@ message Component {
   // Only available on PROJECT and MODULE types
   string description = 12;
   FileStatus status = 13;
+
+  string project_relative_path = 14;
   
 	enum ComponentType {
 	  UNSET = 0;
