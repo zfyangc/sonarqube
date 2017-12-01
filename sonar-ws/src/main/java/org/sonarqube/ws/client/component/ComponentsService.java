@@ -21,18 +21,13 @@ package org.sonarqube.ws.client.component;
 
 import java.util.List;
 import org.sonarqube.ws.Components.SearchProjectsWsResponse;
-import org.sonarqube.ws.Components.ShowWsResponse;
 import org.sonarqube.ws.client.BaseService;
 import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.WsConnector;
 
 import static org.sonar.api.server.ws.WebService.Param;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SEARCH_PROJECTS;
-import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SHOW;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.CONTROLLER_COMPONENTS;
-import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_BRANCH;
-import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_COMPONENT;
-import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_COMPONENT_ID;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_FILTER;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_ORGANIZATION;
 
@@ -44,14 +39,6 @@ public class ComponentsService extends BaseService {
 
   public ComponentsService(WsConnector wsConnector) {
     super(wsConnector, CONTROLLER_COMPONENTS);
-  }
-
-  public ShowWsResponse show(ShowRequest request) {
-    GetRequest get = new GetRequest(path(ACTION_SHOW))
-      .setParam(PARAM_COMPONENT_ID, request.getId())
-      .setParam(PARAM_COMPONENT, request.getKey())
-      .setParam(PARAM_BRANCH, request.getBranch());
-    return call(get, ShowWsResponse.parser());
   }
 
   public SearchProjectsWsResponse searchProjects(SearchProjectsRequest request) {

@@ -27,7 +27,6 @@ import org.sonarqube.ws.client.WsConnector;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.sonar.api.server.ws.WebService.Param.ASCENDING;
@@ -88,23 +87,4 @@ public class ComponentsServiceTest {
       .hasParam(PAGE_SIZE, 10)
       .andNoOtherParam();
   }
-
-  @Test
-  public void show() {
-    String key = randomAlphanumeric(20);
-    String id = randomAlphanumeric(20);
-    underTest.show(new ShowRequest()
-      .setKey(key)
-      .setId(id)
-      .setBranch("my_branch"));
-
-    assertThat(serviceTester.getGetParser()).isSameAs(Components.ShowWsResponse.parser());
-    serviceTester.assertThat(serviceTester.getGetRequest())
-      .hasPath("show")
-      .hasParam("component", key)
-      .hasParam("componentId", id)
-      .hasParam("branch", "my_branch")
-      .andNoOtherParam();
-  }
-
 }
