@@ -39,18 +39,6 @@ public class IssuesServiceTest {
   private IssuesService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void add_comment() {
-    underTest.addComment(new AddCommentRequest("ABCD", "Please help me to fix this issue"));
-    PostRequest request = serviceTester.getPostRequest();
-
-    assertThat(serviceTester.getPostParser()).isSameAs(Issues.Operation.parser());
-    serviceTester.assertThat(request)
-      .hasParam("issue", "ABCD")
-      .hasParam("text", "Please help me to fix this issue")
-      .andNoOtherParam();
-  }
-
-  @Test
   public void assign() {
     underTest.assign(new AssignRequest("ABCD", "teryk"));
     PostRequest request = serviceTester.getPostRequest();

@@ -24,14 +24,15 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.Issues.Issue;
-import org.sonarqube.ws.client.issue.AddCommentRequest;
+import org.sonarqube.ws.client.issues.AddCommentRequest;
 import org.sonarqube.ws.client.issue.AssignRequest;
 import org.sonarqube.ws.client.issue.EditCommentRequest;
-import org.sonarqube.ws.client.issue.IssuesService;
 import org.sonarqube.ws.client.issue.SearchRequest;
 import org.sonarqube.ws.client.issue.SetSeverityRequest;
+import org.sonarqube.ws.client.issues.IssuesService;
 import util.ProjectAnalysis;
 import util.ProjectAnalysisRule;
 import util.issue.IssueRule;
@@ -40,7 +41,6 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.sonarqube.ws.Common.Severity.BLOCKER;
-import static util.ItUtils.newAdminWsClient;
 import static util.ItUtils.toDatetime;
 
 public class IssueActionTest extends AbstractIssueTest {
@@ -51,7 +51,11 @@ public class IssueActionTest extends AbstractIssueTest {
   @ClassRule
   public static final IssueRule issueRule = IssueRule.from(ORCHESTRATOR);
 
+  @Rule
+  public Tester tester = new Tester(ORCHESTRATOR);
+
   private ProjectAnalysis projectAnalysis;
+  private org.sonarqube.ws.client.issue.IssuesService issuesServiceOld;
   private IssuesService issuesService;
 
   private Issue randomIssue;
@@ -63,7 +67,8 @@ public class IssueActionTest extends AbstractIssueTest {
 
     this.projectAnalysis = projectAnalysisRule.newProjectAnalysis(projectKey).withQualityProfile(qualityProfileKey);
     this.projectAnalysis.run();
-    this.issuesService = newAdminWsClient(ORCHESTRATOR).issuesOld();
+    this.issuesServiceOld = tester.wsClient().issuesOld();
+    this.issuesService = tester.wsClient().issues();
     this.randomIssue = issueRule.getRandomIssue();
   }
 
@@ -74,7 +79,7 @@ public class IssueActionTest extends AbstractIssueTest {
 
   @Test
   public void add_comment() throws Exception {
-    Issues.Comment comment = issuesService.addComment(new AddCommentRequest(randomIssue.getKey(), "this is my *comment*")).getIssue().getComments().getComments(0);
+    Issues.Comment comment = issuesService.addComment(new AddCommentRequest().setIssue(randomIssue.getKey()).setText("this is my *comment*")).getIssue().getComments().getComments(0);
     assertThat(comment.getKey()).isNotNull();
     assertThat(comment.getHtmlText()).isEqualTo("this is my <strong>comment</strong>");
     assertThat(comment.getLogin()).isEqualTo("admin");
@@ -94,7 +99,7 @@ public class IssueActionTest extends AbstractIssueTest {
   @Test
   public void should_reject_blank_comment() throws Exception {
     try {
-      issuesService.addComment(new AddCommentRequest(randomIssue.getKey(), "  "));
+      issuesService.addComment(new AddCommentRequest().setIssue(randomIssue.getKey()).setText("  "));
       fail();
     } catch (org.sonarqube.ws.client.HttpException ex) {
       assertThat(ex.code()).isEqualTo(400);
@@ -106,8 +111,8 @@ public class IssueActionTest extends AbstractIssueTest {
 
   @Test
   public void edit_comment() throws Exception {
-    Issues.Comment comment = issuesService.addComment(new AddCommentRequest(randomIssue.getKey(), "this is my *comment*")).getIssue().getComments().getComments(0);
-    Issues.Comment editedComment = issuesService.editComment(new EditCommentRequest(comment.getKey(), "new *comment*")).getIssue().getComments().getComments(0);
+    Issues.Comment comment = issuesService.addComment(new AddCommentRequest().setIssue(randomIssue.getKey()).setText("this is my *comment*")).getIssue().getComments().getComments(0);
+    Issues.Comment editedComment = issuesServiceOld.editComment(new EditCommentRequest(comment.getKey(), "new *comment*")).getIssue().getComments().getComments(0);
     assertThat(editedComment.getHtmlText()).isEqualTo("new <strong>comment</strong>");
 
     // reload issue
@@ -118,8 +123,8 @@ public class IssueActionTest extends AbstractIssueTest {
 
   @Test
   public void delete_comment() throws Exception {
-    Issues.Comment comment = issuesService.addComment(new AddCommentRequest(randomIssue.getKey(), "this is my *comment*")).getIssue().getComments().getComments(0);
-    Issue issue = issuesService.deleteComment(comment.getKey()).getIssue();
+    Issues.Comment comment = issuesService.addComment(new AddCommentRequest().setIssue(randomIssue.getKey()).setText("this is my *comment*")).getIssue().getComments().getComments(0);
+    Issue issue = issuesServiceOld.deleteComment(comment.getKey()).getIssue();
     assertThat(issue.getComments().getCommentsList()).isEmpty();
 
     // reload issue
@@ -138,7 +143,7 @@ public class IssueActionTest extends AbstractIssueTest {
     assertThat(searchIssuesBySeverities(componentKey, "BLOCKER")).isEmpty();
 
     // increase the severity of an issue
-    issuesService.setSeverity(new SetSeverityRequest(randomIssue.getKey(), "BLOCKER"));
+    issuesServiceOld.setSeverity(new SetSeverityRequest(randomIssue.getKey(), "BLOCKER"));
 
     assertThat(searchIssuesBySeverities(componentKey, "BLOCKER")).hasSize(1);
 
@@ -160,7 +165,7 @@ public class IssueActionTest extends AbstractIssueTest {
     Issues.SearchWsResponse response = issueRule.search(new SearchRequest().setIssues(singletonList(randomIssue.getKey())));
     assertThat(response.getUsers().getUsersList()).isEmpty();
 
-    issuesService.assign(new AssignRequest(randomIssue.getKey(), "admin"));
+    issuesServiceOld.assign(new AssignRequest(randomIssue.getKey(), "admin"));
     assertThat(issueRule.search(new SearchRequest().setAssignees(singletonList("admin"))).getIssuesList()).hasSize(1);
 
     projectAnalysis.run();
@@ -173,7 +178,7 @@ public class IssueActionTest extends AbstractIssueTest {
     assertThat(response.getUsers().getUsersList().stream().filter(user -> "Administrator".equals(user.getName())).findFirst()).isPresent();
 
     // unassign
-    issuesService.assign(new AssignRequest(randomIssue.getKey(), null));
+    issuesServiceOld.assign(new AssignRequest(randomIssue.getKey(), null));
     reloaded = issueRule.getByKey(randomIssue.getKey());
     assertThat(reloaded.hasAssignee()).isFalse();
     assertThat(issueRule.search(new SearchRequest().setAssignees(singletonList("admin"))).getIssuesList()).isEmpty();
@@ -186,7 +191,7 @@ public class IssueActionTest extends AbstractIssueTest {
   public void fail_assign_if_assignee_does_not_exist() {
     assertThat(randomIssue.hasAssignee()).isFalse();
     try {
-      issuesService.assign(new AssignRequest(randomIssue.getKey(), "unknown"));
+      issuesServiceOld.assign(new AssignRequest(randomIssue.getKey(), "unknown"));
       fail();
     } catch (org.sonarqube.ws.client.HttpException ex) {
       assertThat(ex.code()).isEqualTo(404);

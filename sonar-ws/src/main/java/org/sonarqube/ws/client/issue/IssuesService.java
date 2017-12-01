@@ -35,7 +35,6 @@ import static org.sonar.api.server.ws.WebService.Param.FACETS;
 import static org.sonar.api.server.ws.WebService.Param.PAGE;
 import static org.sonar.api.server.ws.WebService.Param.PAGE_SIZE;
 import static org.sonar.api.server.ws.WebService.Param.SORT;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_ADD_COMMENT;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_ASSIGN;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_BULK_CHANGE;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_CHANGELOG;
@@ -106,13 +105,6 @@ public class IssuesService extends BaseService {
 
   public IssuesService(WsConnector wsConnector) {
     super(wsConnector, CONTROLLER_ISSUES);
-  }
-
-  public Issues.Operation addComment(AddCommentRequest request) {
-    return call(new PostRequest(path(ACTION_ADD_COMMENT))
-      .setParam(PARAM_ISSUE, request.getIssue())
-      .setParam(PARAM_TEXT, request.getText()),
-      Issues.Operation.parser());
   }
 
   public Issues.Operation assign(AssignRequest request) {
