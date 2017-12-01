@@ -39,7 +39,7 @@ import org.sonarqube.ws.Organizations;
 import org.sonarqube.ws.Projects;
 import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.WsResponse;
-import org.sonarqube.ws.client.component.SearchProjectsRequest;
+import org.sonarqube.ws.client.components.SearchProjectsRequest;
 import org.sonarqube.ws.client.components.ShowRequest;
 import org.sonarqube.ws.client.project.BulkUpdateKeyRequest;
 import org.sonarqube.ws.client.project.CreateRequest;
@@ -254,8 +254,8 @@ public class ProjectKeyUpdateTest {
    */
   @CheckForNull
   private String keyInComponentSearchProjects(String name) {
-    Components.SearchProjectsWsResponse response = tester.wsClient().componentsOld().searchProjects(
-      SearchProjectsRequest.builder().setFilter("query=\"" + name + "\"").build());
+    Components.SearchProjectsWsResponse response = tester.wsClient().components().searchProjects(
+      new SearchProjectsRequest().setFilter("query=\"" + name + "\""));
     if (response.getComponentsCount() > 0) {
       return response.getComponents(0).getKey();
     }
