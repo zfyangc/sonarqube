@@ -35,16 +35,16 @@ import static java.util.Arrays.asList;
 public class PurgeConfiguration {
 
   private final IdUuidPair rootProjectIdUuid;
-  private final Collection<String> qualifiersWithoutHistoricalData;
+  private final Collection<String> scopesWithoutHistoricalData;
   private final int maxAgeInDaysOfClosedIssues;
   private final Optional<Integer> maxAgeInDaysOfInactiveShortLivingBranches;
   private final System2 system2;
   private final Collection<String> disabledComponentUuids;
 
-  public PurgeConfiguration(IdUuidPair rootProjectId, Collection<String> qualifiersWithoutHistoricalData, int maxAgeInDaysOfClosedIssues,
+  public PurgeConfiguration(IdUuidPair rootProjectId, Collection<String> scopesWithoutHistoricalData, int maxAgeInDaysOfClosedIssues,
     Optional<Integer> maxAgeInDaysOfInactiveShortLivingBranches, System2 system2, Collection<String> disabledComponentUuids) {
     this.rootProjectIdUuid = rootProjectId;
-    this.qualifiersWithoutHistoricalData = qualifiersWithoutHistoricalData;
+    this.scopesWithoutHistoricalData = scopesWithoutHistoricalData;
     this.maxAgeInDaysOfClosedIssues = maxAgeInDaysOfClosedIssues;
     this.system2 = system2;
     this.disabledComponentUuids = disabledComponentUuids;
@@ -64,8 +64,8 @@ public class PurgeConfiguration {
     return rootProjectIdUuid;
   }
 
-  public Collection<String> getQualifiersWithoutHistoricalData() {
-    return qualifiersWithoutHistoricalData;
+  public Collection<String> getScopesWithoutHistoricalData() {
+    return scopesWithoutHistoricalData;
   }
 
   public Collection<String> getDisabledComponentUuids() {

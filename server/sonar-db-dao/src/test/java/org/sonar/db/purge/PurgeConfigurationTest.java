@@ -78,7 +78,7 @@ public class PurgeConfigurationTest {
 
     PurgeConfiguration underTest = PurgeConfiguration.newDefaultPurgeConfiguration(settings.asConfig(), new IdUuidPair(42L, "any-uuid"), emptyList());
 
-    assertThat(underTest.getQualifiersWithoutHistoricalData())
+    assertThat(underTest.getScopesWithoutHistoricalData())
       .containsExactlyInAnyOrder(Qualifiers.FILE, Qualifiers.UNIT_TEST_FILE);
     assertThat(underTest.maxLiveDateOfClosedIssues(now)).isEqualTo(DateUtils.addDays(now, -5));
   }
@@ -90,7 +90,7 @@ public class PurgeConfigurationTest {
 
     PurgeConfiguration underTest = PurgeConfiguration.newDefaultPurgeConfiguration(settings.asConfig(), new IdUuidPair(42L, "any-uuid"), emptyList());
 
-    assertThat(underTest.getQualifiersWithoutHistoricalData())
+    assertThat(underTest.getScopesWithoutHistoricalData())
       .containsExactlyInAnyOrder(Qualifiers.DIRECTORY, Qualifiers.FILE, Qualifiers.UNIT_TEST_FILE);
   }
 }
