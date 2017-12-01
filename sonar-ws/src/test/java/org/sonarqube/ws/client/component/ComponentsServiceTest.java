@@ -107,39 +107,4 @@ public class ComponentsServiceTest {
       .andNoOtherParam();
   }
 
-  @Test
-  public void tree() {
-    String componentId = randomAlphanumeric(20);
-    String componentKey = randomAlphanumeric(20);
-    String strategy = randomAlphanumeric(20);
-    int page = 17;
-    int pageSize = 39;
-    String query = randomAlphanumeric(20);
-    underTest.tree(new TreeRequest()
-      .setBaseComponentId(componentId)
-      .setBaseComponentKey(componentKey)
-      .setComponent(componentKey)
-      .setBranch("my_branch")
-      .setQualifiers(asList("q1", "q2"))
-      .setStrategy(strategy)
-      .setPage(page)
-      .setPageSize(pageSize)
-      .setQuery(query)
-      .setSort(asList("sort1", "sort2")));
-
-    assertThat(serviceTester.getGetParser()).isSameAs(Components.TreeWsResponse.parser());
-    serviceTester.assertThat(serviceTester.getGetRequest())
-      .hasPath("tree")
-      .hasParam("componentId", componentId)
-      .hasParam("baseComponentKey", componentKey)
-      .hasParam("component", componentKey)
-      .hasParam("branch", "my_branch")
-      .hasParam("qualifiers", "q1,q2")
-      .hasParam("strategy", strategy)
-      .hasParam("p", page)
-      .hasParam("ps", pageSize)
-      .hasParam("q", query)
-      .hasParam("s", "sort1,sort2")
-      .andNoOtherParam();
-  }
 }

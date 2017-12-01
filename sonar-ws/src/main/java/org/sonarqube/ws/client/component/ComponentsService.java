@@ -22,7 +22,6 @@ package org.sonarqube.ws.client.component;
 import java.util.List;
 import org.sonarqube.ws.Components.SearchProjectsWsResponse;
 import org.sonarqube.ws.Components.ShowWsResponse;
-import org.sonarqube.ws.Components.TreeWsResponse;
 import org.sonarqube.ws.client.BaseService;
 import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.WsConnector;
@@ -30,15 +29,12 @@ import org.sonarqube.ws.client.WsConnector;
 import static org.sonar.api.server.ws.WebService.Param;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SEARCH_PROJECTS;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_SHOW;
-import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_TREE;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.CONTROLLER_COMPONENTS;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_BRANCH;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_COMPONENT;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_COMPONENT_ID;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_FILTER;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_ORGANIZATION;
-import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_QUALIFIERS;
-import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_STRATEGY;
 
 /**
  * @deprecated since 7.0, use {@link org.sonarqube.ws.client.components.ComponentsService} instead
@@ -48,21 +44,6 @@ public class ComponentsService extends BaseService {
 
   public ComponentsService(WsConnector wsConnector) {
     super(wsConnector, CONTROLLER_COMPONENTS);
-  }
-
-  public TreeWsResponse tree(TreeRequest request) {
-    GetRequest get = new GetRequest(path(ACTION_TREE))
-      .setParam(PARAM_COMPONENT_ID, request.getBaseComponentId())
-      .setParam("baseComponentKey", request.getBaseComponentKey())
-      .setParam(PARAM_COMPONENT, request.getComponent())
-      .setParam(PARAM_BRANCH, request.getBranch())
-      .setParam(PARAM_QUALIFIERS, inlineMultipleParamValue(request.getQualifiers()))
-      .setParam(PARAM_STRATEGY, request.getStrategy())
-      .setParam(Param.PAGE, request.getPage())
-      .setParam(Param.PAGE_SIZE, request.getPageSize())
-      .setParam(Param.TEXT_QUERY, request.getQuery())
-      .setParam(Param.SORT, inlineMultipleParamValue(request.getSort()));
-    return call(get, TreeWsResponse.parser());
   }
 
   public ShowWsResponse show(ShowRequest request) {
