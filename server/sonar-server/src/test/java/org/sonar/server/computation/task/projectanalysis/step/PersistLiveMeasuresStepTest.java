@@ -284,7 +284,7 @@ public class PersistLiveMeasuresStepTest extends BaseStepTest {
 
   @Override
   protected ComputationStep step() {
-    return new PersistLiveMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder), treeRootHolder, measureRepository);
+    return new PersistLiveMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder, treeRootHolder), treeRootHolder, measureRepository);
   }
 
 }

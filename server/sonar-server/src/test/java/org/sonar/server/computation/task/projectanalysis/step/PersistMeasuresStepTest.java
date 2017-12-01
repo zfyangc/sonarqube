@@ -231,7 +231,7 @@ public class PersistMeasuresStepTest extends BaseStepTest {
   }
 
   private void execute(boolean persistDirectories) {
-    new PersistMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder), treeRootHolder, measureRepository, persistDirectories)
+    new PersistMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder, treeRootHolder), treeRootHolder, measureRepository, persistDirectories)
       .execute();
   }
 
@@ -253,6 +253,6 @@ public class PersistMeasuresStepTest extends BaseStepTest {
 
   @Override
   protected ComputationStep step() {
-    return new PersistMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder), treeRootHolder, measureRepository, true);
+    return new PersistMeasuresStep(dbClient, metricRepository, new MeasureToMeasureDto(analysisMetadataHolder, treeRootHolder), treeRootHolder, measureRepository, true);
   }
 }

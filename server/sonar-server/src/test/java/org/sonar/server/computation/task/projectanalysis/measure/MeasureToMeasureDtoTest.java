@@ -26,9 +26,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.sonar.db.measure.LiveMeasureDto;
 import org.sonar.db.measure.MeasureDto;
 import org.sonar.server.computation.task.projectanalysis.analysis.MutableAnalysisMetadataHolderRule;
 import org.sonar.server.computation.task.projectanalysis.component.Component;
+import org.sonar.server.computation.task.projectanalysis.component.MutableTreeRootHolderRule;
 import org.sonar.server.computation.task.projectanalysis.component.ReportComponent;
 import org.sonar.server.computation.task.projectanalysis.metric.Metric;
 import org.sonar.server.computation.task.projectanalysis.metric.MetricImpl;
@@ -53,7 +55,10 @@ public class MeasureToMeasureDtoTest {
   @Rule
   public MutableAnalysisMetadataHolderRule analysisMetadataHolder = new MutableAnalysisMetadataHolderRule();
 
-  private MeasureToMeasureDto underTest = new MeasureToMeasureDto(analysisMetadataHolder);
+  @Rule
+  public MutableTreeRootHolderRule treeRootHolder = new MutableTreeRootHolderRule();
+
+  private MeasureToMeasureDto underTest = new MeasureToMeasureDto(analysisMetadataHolder, treeRootHolder);
 
   @Before
   public void setUp() throws Exception {
@@ -175,5 +180,17 @@ public class MeasureToMeasureDtoTest {
 
     assertThat(trueMeasureDto.getValue()).isNull();
     assertThat(trueMeasureDto.getData()).isEqualTo(Measure.Level.OK.name());
+  }
+
+  @Test
+  public void toLiveMeasureDto() {
+    treeRootHolder.setRoot(SOME_COMPONENT);
+
+    LiveMeasureDto liveMeasureDto = underTest.toLiveMeasureDto(
+      Measure.newMeasureBuilder().create(Measure.Level.OK),
+      SOME_LEVEL_METRIC,
+      SOME_COMPONENT);
+
+    assertThat(liveMeasureDto.getTextValue()).isEqualTo(Measure.Level.OK.name());
   }
 }
