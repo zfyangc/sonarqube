@@ -35,7 +35,6 @@ import static org.sonar.api.server.ws.WebService.Param.FACETS;
 import static org.sonar.api.server.ws.WebService.Param.PAGE;
 import static org.sonar.api.server.ws.WebService.Param.PAGE_SIZE;
 import static org.sonar.api.server.ws.WebService.Param.SORT;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_ASSIGN;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_BULK_CHANGE;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_CHANGELOG;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_DELETE_COMMENT;
@@ -54,7 +53,6 @@ import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ADD_TAGS;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ASC;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ASSIGN;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ASSIGNED;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ASSIGNEE;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ASSIGNEES;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_AUTHORS;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_BRANCH;
@@ -105,13 +103,6 @@ public class IssuesService extends BaseService {
 
   public IssuesService(WsConnector wsConnector) {
     super(wsConnector, CONTROLLER_ISSUES);
-  }
-
-  public Issues.Operation assign(AssignRequest request) {
-    return call(new PostRequest(path(ACTION_ASSIGN))
-      .setParam(PARAM_ISSUE, request.getIssue())
-      .setParam(PARAM_ASSIGNEE, request.getAssignee()),
-      Issues.Operation.parser());
   }
 
   public Issues.BulkChangeWsResponse bulkChange(BulkChangeRequest request) {

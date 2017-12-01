@@ -27,11 +27,11 @@ import org.junit.Test;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.Issues.Issue;
-import org.sonarqube.ws.client.issues.AddCommentRequest;
-import org.sonarqube.ws.client.issue.AssignRequest;
 import org.sonarqube.ws.client.issue.EditCommentRequest;
 import org.sonarqube.ws.client.issue.SearchRequest;
 import org.sonarqube.ws.client.issue.SetSeverityRequest;
+import org.sonarqube.ws.client.issues.AddCommentRequest;
+import org.sonarqube.ws.client.issues.AssignRequest;
 import org.sonarqube.ws.client.issues.IssuesService;
 import util.ProjectAnalysis;
 import util.ProjectAnalysisRule;
@@ -165,7 +165,7 @@ public class IssueActionTest extends AbstractIssueTest {
     Issues.SearchWsResponse response = issueRule.search(new SearchRequest().setIssues(singletonList(randomIssue.getKey())));
     assertThat(response.getUsers().getUsersList()).isEmpty();
 
-    issuesServiceOld.assign(new AssignRequest(randomIssue.getKey(), "admin"));
+    issuesService.assign(new AssignRequest().setIssue(randomIssue.getKey()).setAssignee("admin"));
     assertThat(issueRule.search(new SearchRequest().setAssignees(singletonList("admin"))).getIssuesList()).hasSize(1);
 
     projectAnalysis.run();
@@ -178,7 +178,7 @@ public class IssueActionTest extends AbstractIssueTest {
     assertThat(response.getUsers().getUsersList().stream().filter(user -> "Administrator".equals(user.getName())).findFirst()).isPresent();
 
     // unassign
-    issuesServiceOld.assign(new AssignRequest(randomIssue.getKey(), null));
+    issuesService.assign(new AssignRequest().setIssue(randomIssue.getKey()).setAssignee(null));
     reloaded = issueRule.getByKey(randomIssue.getKey());
     assertThat(reloaded.hasAssignee()).isFalse();
     assertThat(issueRule.search(new SearchRequest().setAssignees(singletonList("admin"))).getIssuesList()).isEmpty();
@@ -191,7 +191,7 @@ public class IssueActionTest extends AbstractIssueTest {
   public void fail_assign_if_assignee_does_not_exist() {
     assertThat(randomIssue.hasAssignee()).isFalse();
     try {
-      issuesServiceOld.assign(new AssignRequest(randomIssue.getKey(), "unknown"));
+      issuesService.assign(new AssignRequest().setIssue(randomIssue.getKey()).setAssignee("unknown"));
       fail();
     } catch (org.sonarqube.ws.client.HttpException ex) {
       assertThat(ex.code()).isEqualTo(404);

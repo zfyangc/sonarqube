@@ -39,20 +39,20 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-import org.sonarqube.tests.Category6Suite;
 import org.sonarqube.qa.util.Tester;
+import org.sonarqube.tests.Category6Suite;
 import org.sonarqube.ws.Issues.Issue;
 import org.sonarqube.ws.Issues.SearchWsResponse;
 import org.sonarqube.ws.Organizations.Organization;
-import org.sonarqube.ws.Qualityprofiles;
 import org.sonarqube.ws.Projects.CreateWsResponse.Project;
+import org.sonarqube.ws.Qualityprofiles;
 import org.sonarqube.ws.Users;
 import org.sonarqube.ws.Users.CreateWsResponse.User;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.issue.AssignRequest;
 import org.sonarqube.ws.client.issue.BulkChangeRequest;
 import org.sonarqube.ws.client.issue.SearchRequest;
+import org.sonarqube.ws.client.issues.AssignRequest;
 import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
@@ -176,7 +176,7 @@ public class IssueNotificationsTest {
     // Change assignee
     SearchWsResponse issues = tester.wsClient().issuesOld().search(new SearchRequest().setProjectKeys(singletonList(PROJECT_KEY)));
     Issue issue = issues.getIssuesList().get(0);
-    tester.wsClient().issuesOld().assign(new AssignRequest(issue.getKey(), userWithUserRole.getLogin()));
+    tester.wsClient().issues().assign(new AssignRequest().setIssue(issue.getKey()).setAssignee(userWithUserRole.getLogin()));
 
     // Only the assignee should receive the email
     waitUntilAllNotificationsAreDelivered(1);

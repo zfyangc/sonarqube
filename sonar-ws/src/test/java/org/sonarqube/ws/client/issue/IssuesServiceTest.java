@@ -39,18 +39,6 @@ public class IssuesServiceTest {
   private IssuesService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void assign() {
-    underTest.assign(new AssignRequest("ABCD", "teryk"));
-    PostRequest request = serviceTester.getPostRequest();
-
-    assertThat(serviceTester.getPostParser()).isSameAs(Issues.Operation.parser());
-    serviceTester.assertThat(request)
-      .hasParam("issue", "ABCD")
-      .hasParam("assignee", "teryk")
-      .andNoOtherParam();
-  }
-
-  @Test
   public void bulk_change() {
     underTest.bulkChange(BulkChangeRequest.builder()
       .setIssues(asList("ABCD", "EFGH"))
