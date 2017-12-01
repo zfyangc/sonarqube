@@ -50,9 +50,9 @@ import org.sonarqube.ws.Users;
 import org.sonarqube.ws.Users.CreateWsResponse.User;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.issue.BulkChangeRequest;
 import org.sonarqube.ws.client.issue.SearchRequest;
 import org.sonarqube.ws.client.issues.AssignRequest;
+import org.sonarqube.ws.client.issues.BulkChangeRequest;
 import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
@@ -249,18 +249,16 @@ public class IssueNotificationsTest {
     Issue issue = issues.getIssuesList().get(0);
 
     // bulk change without notification by default
-    tester.wsClient().issuesOld().bulkChange(BulkChangeRequest.builder()
+    tester.wsClient().issues().bulkChange(new BulkChangeRequest()
       .setIssues(singletonList(issue.getKey()))
-      .setAssign(userWithUserRole.getLogin())
-      .setSetSeverity("MINOR")
-      .build());
+      .setAssign(singletonList(userWithUserRole.getLogin()))
+      .setSetSeverity(singletonList("MINOR")));
 
     // bulk change with notification
-    tester.wsClient().issuesOld().bulkChange(BulkChangeRequest.builder()
+    tester.wsClient().issues().bulkChange(new BulkChangeRequest()
       .setIssues(singletonList(issue.getKey()))
-      .setSetSeverity("BLOCKER")
-      .setSendNotifications(true)
-      .build());
+      .setSetSeverity(singletonList("BLOCKER"))
+      .setSendNotifications("true"));
 
     // We are waiting for a single notification for userWithUserRole
     // for a change on MyIssues

@@ -35,7 +35,6 @@ import static org.sonar.api.server.ws.WebService.Param.FACETS;
 import static org.sonar.api.server.ws.WebService.Param.PAGE;
 import static org.sonar.api.server.ws.WebService.Param.PAGE_SIZE;
 import static org.sonar.api.server.ws.WebService.Param.SORT;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_BULK_CHANGE;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_CHANGELOG;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_DELETE_COMMENT;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.ACTION_DO_TRANSITION;
@@ -49,9 +48,7 @@ import static org.sonarqube.ws.client.issue.IssuesWsParameters.CONTROLLER_ISSUES
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.DEPRECATED_PARAM_ACTION_PLANS;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.FACET_MODE;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ADDITIONAL_FIELDS;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ADD_TAGS;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ASC;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ASSIGN;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ASSIGNED;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ASSIGNEES;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_AUTHORS;
@@ -67,7 +64,6 @@ import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_CREATED_AT;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_CREATED_BEFORE;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_CREATED_IN_LAST;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_DIRECTORIES;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_DO_TRANSITION;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_FILE_UUIDS;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ISSUE;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ISSUES;
@@ -78,13 +74,9 @@ import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_ORGANIZATIO
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_PROJECTS;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_PROJECT_KEYS;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_PROJECT_UUIDS;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_REMOVE_TAGS;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_RESOLUTIONS;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_RESOLVED;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_RULES;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_SEND_NOTIFICATIONS;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_SET_SEVERITY;
-import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_SET_TYPE;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_SEVERITIES;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_SEVERITY;
 import static org.sonarqube.ws.client.issue.IssuesWsParameters.PARAM_SINCE_LEAK_PERIOD;
@@ -103,20 +95,6 @@ public class IssuesService extends BaseService {
 
   public IssuesService(WsConnector wsConnector) {
     super(wsConnector, CONTROLLER_ISSUES);
-  }
-
-  public Issues.BulkChangeWsResponse bulkChange(BulkChangeRequest request) {
-    return call(new PostRequest(path(ACTION_BULK_CHANGE))
-      .setParam(PARAM_ISSUES, inlineMultipleParamValue(request.getIssues()))
-      .setParam(PARAM_ASSIGN, request.getAssign())
-      .setParam(PARAM_SET_SEVERITY, request.getSetSeverity())
-      .setParam(PARAM_SET_TYPE, request.getSetType())
-      .setParam(PARAM_DO_TRANSITION, request.getDoTransition())
-      .setParam(PARAM_ADD_TAGS, inlineMultipleParamValue(request.getAddTags()))
-      .setParam(PARAM_REMOVE_TAGS, inlineMultipleParamValue(request.getRemoveTags()))
-      .setParam(PARAM_COMMENT, request.getComment())
-      .setParam(PARAM_SEND_NOTIFICATIONS, request.getSendNotifications()),
-      Issues.BulkChangeWsResponse.parser());
   }
 
   public ChangelogWsResponse changelog(String issueKey) {

@@ -34,9 +34,9 @@ import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.Issues.Issue;
 import org.sonarqube.ws.Organizations;
 import org.sonarqube.ws.Users.CreateWsResponse.User;
-import org.sonarqube.ws.client.issue.BulkChangeRequest;
 import org.sonarqube.ws.client.issue.SearchRequest;
 import org.sonarqube.ws.client.issues.AssignRequest;
+import org.sonarqube.ws.client.issues.BulkChangeRequest;
 import org.sonarqube.ws.client.project.CreateRequest;
 import org.sonarqube.ws.client.qualityprofile.AddProjectRequest;
 import util.issue.IssueRule;
@@ -127,8 +127,8 @@ public class OrganizationIssueAssignTest {
     provisionAndAnalyseProject("sample2", org2.getKey());
     List<String> issues = issueRule.search(new SearchRequest()).getIssuesList().stream().map(Issue::getKey).collect(Collectors.toList());
 
-    Issues.BulkChangeWsResponse response = tester.wsClient().issuesOld()
-      .bulkChange(BulkChangeRequest.builder().setIssues(issues).setAssign(user.getLogin()).build());
+    Issues.BulkChangeWsResponse response = tester.wsClient().issues()
+      .bulkChange(new BulkChangeRequest().setIssues(issues).setAssign(singletonList(user.getLogin())));
 
     assertThat(response.getIgnored()).isGreaterThan(0);
     assertThat(issueRule.search(new SearchRequest().setProjectKeys(singletonList("sample"))).getIssuesList()).extracting(Issue::getAssignee)
