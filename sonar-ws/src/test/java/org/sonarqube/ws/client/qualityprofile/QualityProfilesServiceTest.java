@@ -174,18 +174,6 @@ public class QualityProfilesServiceTest {
   }
 
   @Test
-  public void deactivate_rule() {
-    underTest.deactivateRule("P1", "R1");
-    PostRequest request = serviceTester.getPostRequest();
-
-    serviceTester.assertThat(request)
-      .hasPath("deactivate_rule")
-      .hasParam(PARAM_KEY, "P1")
-      .hasParam(PARAM_RULE, "R1")
-      .andNoOtherParam();
-  }
-
-  @Test
   public void add_user() {
     underTest.addUser(AddUserRequest.builder()
       .setOrganization("O1")

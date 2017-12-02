@@ -33,6 +33,7 @@ import org.sonarqube.ws.client.qualityprofile.AddProjectRequest;
 import org.sonarqube.ws.client.qualityprofile.CreateRequest;
 import org.sonarqube.ws.client.qualityprofile.QualityProfilesService;
 import org.sonarqube.ws.client.qualityprofiles.ActivateRuleRequest;
+import org.sonarqube.ws.client.qualityprofiles.DeactivateRuleRequest;
 import org.sonarqube.ws.client.qualityprofiles.QualityprofilesService;
 import org.sonarqube.ws.client.rules.SearchRequest;
 
@@ -82,7 +83,7 @@ public class QProfileTester {
   }
 
   public QProfileTester deactivateRule(QualityProfile profile, String ruleKey) {
-    serviceOld().deactivateRule(profile.getKey(), ruleKey);
+    service().deactivateRule(new DeactivateRuleRequest().setKey(profile.getKey()).setRule(ruleKey));
     return this;
   }
 

@@ -38,6 +38,8 @@ import org.sonarqube.ws.client.qualityprofile.CopyRequest;
 import org.sonarqube.ws.client.qualityprofile.QualityProfilesService;
 import org.sonarqube.ws.client.qualityprofile.SearchRequest;
 import org.sonarqube.ws.client.qualityprofile.SetDefaultRequest;
+import org.sonarqube.ws.client.qualityprofiles.DeactivateRuleRequest;
+import org.sonarqube.ws.client.qualityprofiles.QualityprofilesService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -99,10 +101,12 @@ public class BuiltInQualityProfilesTest {
     Organization org = tester.organizations().generate();
     QualityProfile builtInProfile = getProfile(org, p -> p.getIsBuiltIn() && p.getIsDefault() && "Basic".equals(p.getName()) && "xoo".equals(p.getLanguage()));
 
-    QualityProfilesService service = tester.qProfiles().serviceOld();
+    QualityProfilesService serviceOld = tester.qProfiles().serviceOld();
+    QualityprofilesService service = tester.qProfiles().service();
     expectBadRequestError(() -> tester.qProfiles().activateRule(builtInProfile.getKey(), RULE_ONE_BUG_PER_LINE));
-    expectBadRequestError(() -> service.deactivateRule(builtInProfile.getKey(), RULE_ONE_BUG_PER_LINE));
-    expectBadRequestError(() -> service.delete(builtInProfile.getKey()));
+    expectBadRequestError(() -> service.deactivateRule(new DeactivateRuleRequest()
+            .setKey(builtInProfile.getKey()).setRule(RULE_ONE_BUG_PER_LINE)));
+    expectBadRequestError(() -> serviceOld.delete(builtInProfile.getKey()));
   }
 
   @Test
