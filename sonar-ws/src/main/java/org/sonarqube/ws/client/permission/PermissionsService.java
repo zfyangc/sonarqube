@@ -57,13 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public void deleteTemplate(DeleteTemplateRequest request) {
-    call(new PostRequest(path("delete_template"))
-      .setParam(PARAM_ORGANIZATION, request.getOrganization())
-      .setParam(PARAM_TEMPLATE_ID, request.getTemplateId())
-      .setParam(PARAM_TEMPLATE_NAME, request.getTemplateName()));
-  }
-
   public void removeGroup(RemoveGroupRequest request) {
     call(new PostRequest(path("remove_group"))
       .setParam(PARAM_ORGANIZATION, request.getOrganization())

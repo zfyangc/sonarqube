@@ -77,24 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void deleteTemplate_does_POST_on_Ws_delete_template() {
-    underTest.deleteTemplate(new DeleteTemplateRequest()
-      .setTemplateId(TEMPLATE_ID_VALUE)
-      .setTemplateName(TEMPLATE_NAME_VALUE)
-      .setOrganization(ORGANIZATION_VALUE)
-    );
-
-    assertThat(serviceTester.getPostParser()).isNull();
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("delete_template")
-      .hasParam(PARAM_TEMPLATE_ID, TEMPLATE_ID_VALUE)
-      .hasParam(PARAM_TEMPLATE_NAME, TEMPLATE_NAME_VALUE)
-      .hasParam(PARAM_ORGANIZATION, ORGANIZATION_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void removeGroup_does_POST_on_Ws_remove_group() {
     underTest.removeGroup(new RemoveGroupRequest()
       .setPermission(PERMISSION_VALUE)
