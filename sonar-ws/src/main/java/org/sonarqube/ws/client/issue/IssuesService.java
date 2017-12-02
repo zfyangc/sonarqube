@@ -96,13 +96,6 @@ public class IssuesService extends BaseService {
     super(wsConnector, CONTROLLER_ISSUES);
   }
 
-  public Issues.Operation setTags(String issue, String... tags) {
-    return call(new PostRequest(path(ACTION_SET_TAGS))
-        .setParam(PARAM_ISSUE, issue)
-        .setParam(PARAM_TAGS, Arrays.stream(tags).collect(Collectors.joining(","))),
-      Issues.Operation.parser());
-  }
-
   public WsResponse getTags(@Nullable String organization) {
     return call(new PostRequest(path(ACTION_TAGS))
       .setParam(PARAM_ORGANIZATION, organization)

@@ -33,6 +33,7 @@ import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Organizations.Organization;
 import org.sonarqube.ws.Users.CreateWsResponse.User;
 import org.sonarqube.ws.client.issues.SearchRequest;
+import org.sonarqube.ws.client.issues.SetTagsRequest;
 import org.sonarqube.ws.client.organizations.AddMemberRequest;
 import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.sonarqube.ws.client.project.CreateRequest;
@@ -77,7 +78,7 @@ public class IssueTagsTest {
     analyzeProject(projectKey);
 
     String issue = tester.wsClient().issues().search(new SearchRequest()).getIssues(0).getKey();
-    tester.wsClient().issuesOld().setTags(issue, "bla", "blubb");
+    tester.wsClient().issues().setTags(new SetTagsRequest().setIssue(issue).setTags(asList("bla", "blubb")));
 
     String[] publicTags = {"bad-practice", "convention", "pitfall"};
     String[] privateTags = {"bad-practice", "bla", "blubb", "convention", "pitfall"};
