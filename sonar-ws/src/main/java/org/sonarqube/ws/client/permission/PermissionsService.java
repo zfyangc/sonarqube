@@ -57,12 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public SearchTemplatesWsResponse searchTemplates(SearchTemplatesRequest request) {
-    GetRequest get = new GetRequest(path("search_templates"))
-      .setParam("q", request.getQuery());
-    return call(get, SearchTemplatesWsResponse.parser());
-  }
-
   public void setDefaultTemplate(SetDefaultTemplateRequest request) {
     call(new PostRequest(path("set_default_template"))
       .setParam(PARAM_QUALIFIER, request.getQualifier())

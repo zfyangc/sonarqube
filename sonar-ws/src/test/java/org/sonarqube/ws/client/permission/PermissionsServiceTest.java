@@ -77,20 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void searchTemplates_does_GET_on_Ws_search_templates() {
-    underTest.searchTemplates(new SearchTemplatesRequest()
-      .setQuery(QUERY_VALUE)
-    );
-
-    assertThat(serviceTester.getGetParser()).isSameAs(Permissions.SearchTemplatesWsResponse.parser());
-    GetRequest getRequest = serviceTester.getGetRequest();
-    serviceTester.assertThat(getRequest)
-      .hasPath("search_templates")
-      .hasParam(PARAM_Q, QUERY_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void setDefaultTemplate_does_POST_on_Ws_set_default_template() {
     underTest.setDefaultTemplate(new SetDefaultTemplateRequest()
       .setQualifier(QUALIFIER_VALUE)

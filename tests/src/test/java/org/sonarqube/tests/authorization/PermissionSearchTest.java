@@ -30,7 +30,6 @@ import org.sonarqube.ws.Permissions;
 import org.sonarqube.ws.Permissions.Permission;
 import org.sonarqube.ws.Permissions.SearchTemplatesWsResponse;
 import org.sonarqube.ws.client.PostRequest;
-import org.sonarqube.ws.client.permission.SearchTemplatesRequest;
 import org.sonarqube.ws.client.permission.UsersRequest;
 import org.sonarqube.ws.client.permissions.*;
 import util.ItUtils;
@@ -119,9 +118,9 @@ public class PermissionSearchTest {
         .setPermission("admin")
         .setTemplateName("my-new-template"));
 
-    SearchTemplatesWsResponse searchTemplatesWsResponse = tester.wsClient().permissionsOld().searchTemplates(
+    SearchTemplatesWsResponse searchTemplatesWsResponse = tester.wsClient().permissions().searchTemplates(
       new SearchTemplatesRequest()
-        .setQuery("my-new-template"));
+        .setQ("my-new-template"));
     assertThat(searchTemplatesWsResponse.getPermissionTemplates(0).getName()).isEqualTo("my-new-template");
     assertThat(searchTemplatesWsResponse.getPermissionTemplates(0).getPermissions(0).getKey()).isEqualTo("admin");
     assertThat(searchTemplatesWsResponse.getPermissionTemplates(0).getPermissions(0).getUsersCount()).isEqualTo(1);
@@ -146,9 +145,9 @@ public class PermissionSearchTest {
         .setTemplateName("my-new-template")
     );
 
-    SearchTemplatesWsResponse clearedSearchTemplatesWsResponse = tester.wsClient().permissionsOld().searchTemplates(
+    SearchTemplatesWsResponse clearedSearchTemplatesWsResponse = tester.wsClient().permissions().searchTemplates(
       new SearchTemplatesRequest()
-        .setQuery("my-new-template"));
+        .setQ("my-new-template"));
     assertThat(clearedSearchTemplatesWsResponse.getPermissionTemplates(0).getPermissionsList())
       .extracting(Permission::getUsersCount, Permission::getGroupsCount, Permission::getWithProjectCreator)
       .hasSize(5)
