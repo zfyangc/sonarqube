@@ -76,35 +76,6 @@ public class PermissionsServiceTest {
 
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
-  @Test(expected = NullPointerException.class)
-  public void groups_throws_NPE_if_GroupWsRequest_argument_is_null() {
-    underTest.groups(null);
-  }
-
-  @Test
-  public void groups_does_POST_on_WS_groups() {
-    GroupsRequest request = new GroupsRequest();
-    underTest.groups(request
-      .setPermission(PERMISSION_VALUE)
-      .setProjectId(PROJECT_ID_VALUE)
-      .setProjectKey(PROJECT_KEY_VALUE)
-      .setPage(PAGE_VALUE)
-      .setPageSize(PAGE_SIZE_VALUE)
-      .setQuery(QUERY_VALUE));
-
-    assertThat(serviceTester.getGetParser()).isSameAs(Permissions.WsGroupsResponse.parser());
-    GetRequest getRequest = serviceTester.getGetRequest();
-    serviceTester.assertThat(getRequest)
-      .hasPath("groups")
-      .hasParam(PARAM_PERMISSION, PERMISSION_VALUE)
-      .hasParam(PARAM_PROJECT_ID, PROJECT_ID_VALUE)
-      .hasParam(PARAM_PROJECT_KEY, PROJECT_KEY_VALUE)
-      .hasParam(PARAM_P, PAGE_VALUE)
-      .hasParam(PARAM_PS, PAGE_SIZE_VALUE)
-      .hasParam(PARAM_Q, QUERY_VALUE)
-      .andNoOtherParam();
-  }
-
   @Test
   public void addGroup_does_POST_on_Ws_add_group() {
     underTest.addGroup(new AddGroupRequest()

@@ -57,17 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public Permissions.WsGroupsResponse groups(GroupsRequest request) {
-    GetRequest get = new GetRequest(path("groups"))
-      .setParam(PARAM_PERMISSION, request.getPermission())
-      .setParam(PARAM_PROJECT_ID, request.getProjectId())
-      .setParam(PARAM_PROJECT_KEY, request.getProjectKey())
-      .setParam("p", request.getPage())
-      .setParam("ps", request.getPageSize())
-      .setParam("q", request.getQuery());
-    return call(get, Permissions.WsGroupsResponse.parser());
-  }
-
   public void addGroup(AddGroupRequest request) {
     call(new PostRequest(path("add_group"))
       .setParam(PARAM_ORGANIZATION, request.getOrganization())

@@ -36,12 +36,12 @@ import org.sonarqube.ws.client.permission.AddProjectCreatorToTemplateRequest;
 import org.sonarqube.ws.client.permission.AddUserToTemplateRequest;
 import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.sonarqube.ws.client.permission.CreateTemplateRequest;
-import org.sonarqube.ws.client.permission.GroupsRequest;
 import org.sonarqube.ws.client.permission.RemoveGroupFromTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveProjectCreatorFromTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveUserFromTemplateRequest;
 import org.sonarqube.ws.client.permission.SearchTemplatesRequest;
 import org.sonarqube.ws.client.permission.UsersRequest;
+import org.sonarqube.ws.client.permissions.GroupsRequest;
 import util.ItUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,7 +97,7 @@ public class PermissionSearchTest {
       .users(new UsersRequest().setPermission("admin"));
     assertThat(users.getUsersList()).extracting("login").contains(LOGIN);
 
-    Permissions.WsGroupsResponse groupsResponse = tester.wsClient().permissionsOld()
+    Permissions.WsGroupsResponse groupsResponse = tester.wsClient().permissions()
       .groups(new GroupsRequest()
         .setPermission("admin"));
     assertThat(groupsResponse.getGroupsList()).extracting("name").contains(GROUP_NAME);
