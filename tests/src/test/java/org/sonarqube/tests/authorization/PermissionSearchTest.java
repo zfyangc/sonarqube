@@ -30,7 +30,6 @@ import org.sonarqube.ws.Permissions;
 import org.sonarqube.ws.Permissions.Permission;
 import org.sonarqube.ws.Permissions.SearchTemplatesWsResponse;
 import org.sonarqube.ws.client.PostRequest;
-import org.sonarqube.ws.client.permission.UsersRequest;
 import org.sonarqube.ws.client.permissions.*;
 import util.ItUtils;
 
@@ -83,7 +82,7 @@ public class PermissionSearchTest {
     // by default, a group has the global admin permission
     assertThat(searchGlobalPermissionsWsResponse.getPermissionsList().get(0).getGroupsCount()).isEqualTo(2);
 
-    Permissions.UsersWsResponse users = tester.wsClient().permissionsOld()
+    Permissions.UsersWsResponse users = tester.wsClient().permissions()
       .users(new UsersRequest().setPermission("admin"));
     assertThat(users.getUsersList()).extracting("login").contains(LOGIN);
 

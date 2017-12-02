@@ -56,15 +56,4 @@ public class PermissionsService extends BaseService {
   public PermissionsService(WsConnector wsConnector) {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
-
-  public UsersWsResponse users(UsersRequest request) {
-    return call(new GetRequest(path("users"))
-      .setParam(PARAM_ORGANIZATION, request.getOrganization())
-      .setParam(PARAM_PERMISSION, request.getPermission())
-      .setParam(PARAM_PROJECT_ID, request.getProjectId())
-      .setParam(PARAM_PROJECT_KEY, request.getProjectKey())
-      .setParam("p", request.getPage())
-      .setParam("ps", request.getPageSize())
-      .setParam("q", request.getQuery()), UsersWsResponse.parser());
-  }
 }

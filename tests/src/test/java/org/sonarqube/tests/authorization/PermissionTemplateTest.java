@@ -39,7 +39,6 @@ import org.sonarqube.ws.Users.CreateWsResponse;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.components.SearchProjectsRequest;
 import org.sonarqube.ws.client.permissions.*;
-import org.sonarqube.ws.client.permission.UsersRequest;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -199,7 +198,7 @@ public class PermissionTemplateTest {
       .setOrganization(organization.getKey())
       .setProjectKey(project.getKey())
       .setPermission("user");
-    Permissions.UsersWsResponse response = tester.wsClient().permissionsOld().users(request);
+    Permissions.UsersWsResponse response = tester.wsClient().permissions().users(request);
     Optional<Permissions.User> found = response.getUsersList().stream()
       .filter(u -> user.getLogin().equals(u.getLogin()))
       .findFirst();
