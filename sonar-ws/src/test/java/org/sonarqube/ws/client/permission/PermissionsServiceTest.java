@@ -77,30 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void removeGroupFromTemplate_does_POST_on_Ws_remove_group_from_template() {
-    underTest.removeGroupFromTemplate(new RemoveGroupFromTemplateRequest()
-      .setPermission(PERMISSION_VALUE)
-      .setGroupId(GROUP_ID_VALUE)
-      .setGroupName(GROUP_NAME_VALUE)
-      .setTemplateId(TEMPLATE_ID_VALUE)
-      .setTemplateName(TEMPLATE_NAME_VALUE)
-      .setOrganization(ORGANIZATION_VALUE)
-    );
-
-    assertThat(serviceTester.getPostParser()).isNull();
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("remove_group_from_template")
-      .hasParam(PARAM_PERMISSION, PERMISSION_VALUE)
-      .hasParam(PARAM_GROUP_ID, GROUP_ID_VALUE)
-      .hasParam(PARAM_GROUP_NAME, GROUP_NAME_VALUE)
-      .hasParam(PARAM_TEMPLATE_ID, TEMPLATE_ID_VALUE)
-      .hasParam(PARAM_TEMPLATE_NAME, TEMPLATE_NAME_VALUE)
-      .hasParam(PARAM_ORGANIZATION, ORGANIZATION_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void removeUser_does_POST_on_Ws_remove_user() {
     underTest.removeUser(new RemoveUserRequest()
       .setPermission(PERMISSION_VALUE)
