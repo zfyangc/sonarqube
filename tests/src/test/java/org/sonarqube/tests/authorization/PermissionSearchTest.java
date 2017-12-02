@@ -30,7 +30,6 @@ import org.sonarqube.ws.Permissions;
 import org.sonarqube.ws.Permissions.Permission;
 import org.sonarqube.ws.Permissions.SearchTemplatesWsResponse;
 import org.sonarqube.ws.client.PostRequest;
-import org.sonarqube.ws.client.permission.RemoveProjectCreatorFromTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveUserFromTemplateRequest;
 import org.sonarqube.ws.client.permission.SearchTemplatesRequest;
 import org.sonarqube.ws.client.permission.UsersRequest;
@@ -142,11 +141,10 @@ public class PermissionSearchTest {
         .setTemplateName("my-new-template")
         .setLogin(LOGIN));
 
-    tester.wsClient().permissionsOld().removeProjectCreatorFromTemplate(
-      RemoveProjectCreatorFromTemplateRequest.builder()
+    tester.wsClient().permissions().removeProjectCreatorFromTemplate(
+      new RemoveProjectCreatorFromTemplateRequest()
         .setPermission("admin")
         .setTemplateName("my-new-template")
-      .build()
     );
 
     SearchTemplatesWsResponse clearedSearchTemplatesWsResponse = tester.wsClient().permissionsOld().searchTemplates(

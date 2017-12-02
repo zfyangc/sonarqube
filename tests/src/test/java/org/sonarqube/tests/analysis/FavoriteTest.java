@@ -32,9 +32,9 @@ import org.sonarqube.ws.Favorites.Favorite;
 import org.sonarqube.ws.Permissions;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.favorites.SearchRequest;
-import org.sonarqube.ws.client.permission.RemoveProjectCreatorFromTemplateRequest;
 import org.sonarqube.ws.client.permission.SearchTemplatesRequest;
 import org.sonarqube.ws.client.permissions.AddProjectCreatorToTemplateRequest;
+import org.sonarqube.ws.client.permissions.RemoveProjectCreatorFromTemplateRequest;
 
 import static com.sonar.orchestrator.container.Server.ADMIN_LOGIN;
 import static com.sonar.orchestrator.container.Server.ADMIN_PASSWORD;
@@ -115,9 +115,8 @@ public class FavoriteTest {
   private void removeProjectCreatorPermission() {
     Permissions.SearchTemplatesWsResponse permissionTemplates = adminWsClient.permissionsOld().searchTemplates(new SearchTemplatesRequest());
     assertThat(permissionTemplates.getDefaultTemplatesCount()).isEqualTo(1);
-    adminWsClient.permissionsOld().removeProjectCreatorFromTemplate(RemoveProjectCreatorFromTemplateRequest.builder()
+    adminWsClient.permissions().removeProjectCreatorFromTemplate(new RemoveProjectCreatorFromTemplateRequest()
       .setTemplateId(permissionTemplates.getDefaultTemplates(0).getTemplateId())
-      .setPermission("admin")
-      .build());
+      .setPermission("admin"));
   }
 }
