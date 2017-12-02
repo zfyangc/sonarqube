@@ -33,6 +33,7 @@ import org.sonar.wsclient.user.UserParameters;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.client.issues.BulkChangeRequest;
+import org.sonarqube.ws.client.issues.ChangelogRequest;
 import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.sonarqube.ws.client.project.UpdateVisibilityRequest;
 import util.ItUtils;
@@ -272,6 +273,6 @@ public class IssuePermissionTest {
   }
 
   private static Issues.ChangelogWsResponse changelog(String issueKey, String login, String password) {
-    return newUserWsClient(orchestrator, login, password).issuesOld().changelog(issueKey);
+    return newUserWsClient(orchestrator, login, password).issues().changelog(new ChangelogRequest().setIssue(issueKey));
   }
 }

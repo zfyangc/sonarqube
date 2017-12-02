@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.client.issue.SearchRequest;
+import org.sonarqube.ws.client.issues.ChangelogRequest;
 import util.ItUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,7 +69,7 @@ public class TechnicalDebtInIssueChangelogTest {
   }
 
   private Issues.ChangelogWsResponse changelog(String issueKey) {
-    return tester.wsClient().issuesOld().changelog(issueKey);
+    return tester.wsClient().issues().changelog(new ChangelogRequest().setIssue(issueKey));
   }
 
 }

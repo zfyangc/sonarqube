@@ -97,12 +97,6 @@ public class IssuesService extends BaseService {
     super(wsConnector, CONTROLLER_ISSUES);
   }
 
-  public ChangelogWsResponse changelog(String issueKey) {
-    return call(new GetRequest(path(ACTION_CHANGELOG))
-      .setParam(PARAM_ISSUE, issueKey),
-      ChangelogWsResponse.parser());
-  }
-
   public Issues.Operation doTransition(DoTransitionRequest request) {
     return call(new PostRequest(path(ACTION_DO_TRANSITION))
       .setParam(PARAM_ISSUE, request.getIssue())
