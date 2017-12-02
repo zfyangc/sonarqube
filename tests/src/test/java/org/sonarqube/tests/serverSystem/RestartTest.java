@@ -52,8 +52,6 @@ public class RestartTest {
   public ExpectedException thrown = ExpectedException.none();
   @Rule
   public TestRule safeguardTimeout = new DisableOnDebug(Timeout.seconds(900));
-  @Rule
-  public Tester tester = new Tester(orchestrator);
 
   @After
   public void stop() {
@@ -98,13 +96,13 @@ public class RestartTest {
   }
 
   private void createSystemAdministrator(String login, String password) {
-    WsClient wsClient = tester.wsClient();
+    WsClient wsClient = newAdminWsClient(orchestrator);
     createNonSystemAdministrator(wsClient, login, password);
     wsClient.permissions().addUser(new AddUserRequest().setLogin(login).setPermission("admin"));
   }
 
   private void createNonSystemAdministrator(String login, String password) {
-    createNonSystemAdministrator(tester.wsClient(), login, password);
+    createNonSystemAdministrator(newAdminWsClient(orchestrator), login, password);
   }
 
   private static void createNonSystemAdministrator(WsClient wsClient, String login, String password) {
