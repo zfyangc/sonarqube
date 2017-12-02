@@ -40,7 +40,9 @@ import org.sonar.server.issue.index.IssueIndex;
 import org.sonar.server.organization.DefaultOrganizationProvider;
 import org.sonar.server.rule.index.RuleIndex;
 import org.sonar.server.ws.WsUtils;
+import org.sonarqube.ws.Issues;
 
+import static org.sonar.server.ws.WsUtils.writeProtobuf;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.PARAM_ORGANIZATION;
 
 /**
@@ -59,14 +61,6 @@ public class TagsAction implements IssuesWsAction {
     this.ruleIndex = ruleIndex;
     this.dbClient = dbClient;
     this.defaultOrganizationProvider = defaultOrganizationProvider;
-  }
-
-  private static void writeResponse(Response response, List<String> tags) {
-    try (JsonWriter json = response.newJsonWriter()) {
-      json.beginObject().name("tags").beginArray();
-      tags.forEach(json::value);
-      json.endArray().endObject();
-    }
   }
 
   @Override
@@ -92,7 +86,10 @@ public class TagsAction implements IssuesWsAction {
     int pageSize = request.mandatoryParamAsInt("ps");
     OrganizationDto organization = getOrganization(request.param(PARAM_ORGANIZATION));
     List<String> tags = listTags(organization, query, pageSize == 0 ? Integer.MAX_VALUE : pageSize);
-    writeResponse(response, tags);
+
+    Issues.TagsResponse.Builder tagsResponseBuilder = Issues.TagsResponse.newBuilder();
+    tags.forEach(tagsResponseBuilder::addTags);
+    writeProtobuf(tagsResponseBuilder.build(), request, response);
   }
 
   private List<String> listTags(OrganizationDto organization, @Nullable String textQuery, int pageSize) {
