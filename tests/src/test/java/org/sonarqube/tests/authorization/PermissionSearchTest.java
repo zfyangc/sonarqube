@@ -31,17 +31,13 @@ import org.sonarqube.ws.Permissions.Permission;
 import org.sonarqube.ws.Permissions.SearchTemplatesWsResponse;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.permission.AddProjectCreatorToTemplateRequest;
-import org.sonarqube.ws.client.permission.AddUserToTemplateRequest;
 import org.sonarqube.ws.client.permission.CreateTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveGroupFromTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveProjectCreatorFromTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveUserFromTemplateRequest;
 import org.sonarqube.ws.client.permission.SearchTemplatesRequest;
 import org.sonarqube.ws.client.permission.UsersRequest;
-import org.sonarqube.ws.client.permissions.AddGroupRequest;
-import org.sonarqube.ws.client.permissions.AddGroupToTemplateRequest;
-import org.sonarqube.ws.client.permissions.AddUserRequest;
-import org.sonarqube.ws.client.permissions.GroupsRequest;
+import org.sonarqube.ws.client.permissions.*;
 import util.ItUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -111,7 +107,7 @@ public class PermissionSearchTest {
         .setDescription("template-used-in-tests"));
     assertThat(createTemplateWsResponse.getPermissionTemplate().getName()).isEqualTo("my-new-template");
 
-    tester.wsClient().permissionsOld().addUserToTemplate(
+    tester.wsClient().permissions().addUserToTemplate(
       new AddUserToTemplateRequest()
         .setPermission("admin")
         .setTemplateName("my-new-template")

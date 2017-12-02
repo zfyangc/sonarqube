@@ -57,15 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public void addUserToTemplate(AddUserToTemplateRequest request) {
-    call(new PostRequest(path("add_user_to_template"))
-      .setParam(PARAM_ORGANIZATION, request.getOrganization())
-      .setParam(PARAM_PERMISSION, request.getPermission())
-      .setParam(PARAM_USER_LOGIN, request.getLogin())
-      .setParam(PARAM_TEMPLATE_ID, request.getTemplateId())
-      .setParam(PARAM_TEMPLATE_NAME, request.getTemplateName()));
-  }
-
   public void addProjectCreatorToTemplate(AddProjectCreatorToTemplateRequest request) {
     call(new PostRequest(path("add_project_creator_to_template"))
       .setParam(PARAM_ORGANIZATION, request.getOrganization())

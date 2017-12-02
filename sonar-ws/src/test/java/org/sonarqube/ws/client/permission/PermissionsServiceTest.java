@@ -77,28 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void addUserToTemplate_does_POST_on_Ws_add_user_to_template() {
-    underTest.addUserToTemplate(new AddUserToTemplateRequest()
-      .setOrganization(ORGANIZATION_VALUE)
-      .setPermission(PERMISSION_VALUE)
-      .setLogin(LOGIN_VALUE)
-      .setTemplateId(TEMPLATE_ID_VALUE)
-      .setTemplateName(TEMPLATE_NAME_VALUE)
-    );
-
-    assertThat(serviceTester.getPostParser()).isNull();
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("add_user_to_template")
-      .hasParam(PARAM_ORGANIZATION, ORGANIZATION_VALUE)
-      .hasParam(PARAM_PERMISSION, PERMISSION_VALUE)
-      .hasParam(PARAM_USER_LOGIN, LOGIN_VALUE)
-      .hasParam(PARAM_TEMPLATE_ID, TEMPLATE_ID_VALUE)
-      .hasParam(PARAM_TEMPLATE_NAME, TEMPLATE_NAME_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void applyTemplate_does_POST_on_Ws_apply_template() {
     underTest.applyTemplate(new ApplyTemplateRequest()
       .setOrganization(ORGANIZATION_VALUE)

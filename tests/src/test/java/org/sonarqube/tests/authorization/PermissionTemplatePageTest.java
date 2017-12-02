@@ -26,9 +26,9 @@ import org.junit.Test;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.qa.util.pageobjects.ProjectsManagementPage;
 import org.sonarqube.ws.Permissions;
-import org.sonarqube.ws.client.permission.AddUserToTemplateRequest;
 import org.sonarqube.ws.client.permission.CreateTemplateRequest;
 import org.sonarqube.ws.client.permission.UsersRequest;
+import org.sonarqube.ws.client.permissions.AddUserToTemplateRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,7 +49,7 @@ public class PermissionTemplatePageTest {
     String adminLogin = tester.users().generateAdministratorOnDefaultOrganization().getLogin();
 
     tester.wsClient().permissionsOld().createTemplate(new CreateTemplateRequest().setName("foo-template"));
-    tester.wsClient().permissionsOld().addUserToTemplate(
+    tester.wsClient().permissions().addUserToTemplate(
       new AddUserToTemplateRequest()
         .setPermission("admin")
         .setTemplateName("foo-template")

@@ -38,12 +38,12 @@ import org.sonarqube.ws.Projects.CreateWsResponse.Project;
 import org.sonarqube.ws.Users.CreateWsResponse;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.components.SearchProjectsRequest;
-import org.sonarqube.ws.client.permission.AddUserToTemplateRequest;
 import org.sonarqube.ws.client.permission.ApplyTemplateRequest;
 import org.sonarqube.ws.client.permission.BulkApplyTemplateRequest;
 import org.sonarqube.ws.client.permission.CreateTemplateRequest;
-import org.sonarqube.ws.client.permission.PermissionsService;
+import org.sonarqube.ws.client.permissions.PermissionsService;
 import org.sonarqube.ws.client.permission.UsersRequest;
+import org.sonarqube.ws.client.permissions.AddUserToTemplateRequest;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,7 +90,7 @@ public class PermissionTemplateTest {
     CreateWsResponse.User user = tester.users().generateMember(organization);
     CreateWsResponse.User anotherUser = tester.users().generateMember(organization);
     Permissions.PermissionTemplate template = createTemplate(organization).getPermissionTemplate();
-    tester.wsClient().permissionsOld().addUserToTemplate(new AddUserToTemplateRequest()
+    tester.wsClient().permissions().addUserToTemplate(new AddUserToTemplateRequest()
       .setOrganization(organization.getKey())
       .setTemplateId(template.getId())
       .setLogin(user.getLogin())
@@ -156,8 +156,9 @@ public class PermissionTemplateTest {
    */
   private void createAndApplyTemplate(Organization organization, Project project, CreateWsResponse.User user) {
     String templateName = "For user";
-    PermissionsService service = tester.wsClient().permissionsOld();
-    service.createTemplate(new CreateTemplateRequest()
+    org.sonarqube.ws.client.permission.PermissionsService serviceOld = tester.wsClient().permissionsOld();
+    PermissionsService service = tester.wsClient().permissions();
+    serviceOld.createTemplate(new CreateTemplateRequest()
       .setOrganization(organization.getKey())
       .setName(templateName)
       .setDescription("Give admin permissions to single user"));
@@ -166,7 +167,7 @@ public class PermissionTemplateTest {
       .setLogin(user.getLogin())
       .setPermission("user")
       .setTemplateName(templateName));
-    service.applyTemplate(new ApplyTemplateRequest()
+    serviceOld.applyTemplate(new ApplyTemplateRequest()
       .setOrganization(organization.getKey())
       .setProjectKey(project.getKey())
       .setTemplateName(templateName));
