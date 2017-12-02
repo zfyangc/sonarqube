@@ -57,13 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public void setDefaultTemplate(SetDefaultTemplateRequest request) {
-    call(new PostRequest(path("set_default_template"))
-      .setParam(PARAM_QUALIFIER, request.getQualifier())
-      .setParam(PARAM_TEMPLATE_ID, request.getTemplateId())
-      .setParam(PARAM_TEMPLATE_NAME, request.getTemplateName()));
-  }
-
   public UsersWsResponse users(UsersRequest request) {
     return call(new GetRequest(path("users"))
       .setParam(PARAM_ORGANIZATION, request.getOrganization())

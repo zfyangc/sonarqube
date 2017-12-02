@@ -77,24 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void setDefaultTemplate_does_POST_on_Ws_set_default_template() {
-    underTest.setDefaultTemplate(new SetDefaultTemplateRequest()
-      .setQualifier(QUALIFIER_VALUE)
-      .setTemplateId(TEMPLATE_ID_VALUE)
-      .setTemplateName(TEMPLATE_NAME_VALUE)
-    );
-
-    assertThat(serviceTester.getPostParser()).isNull();
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("set_default_template")
-      .hasParam(PARAM_QUALIFIER, QUALIFIER_VALUE)
-      .hasParam(PARAM_TEMPLATE_ID, TEMPLATE_ID_VALUE)
-      .hasParam(PARAM_TEMPLATE_NAME, TEMPLATE_NAME_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void users() {
     underTest.users(new UsersRequest()
       .setOrganization("org")
