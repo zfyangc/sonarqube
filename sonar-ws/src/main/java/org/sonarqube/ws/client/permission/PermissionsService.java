@@ -57,15 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public void addGroupToTemplate(AddGroupToTemplateRequest request) {
-    call(new PostRequest(path("add_group_to_template"))
-      .setParam(PARAM_GROUP_ID, request.getGroupId())
-      .setParam(PARAM_GROUP_NAME, request.getGroupName())
-      .setParam(PARAM_PERMISSION, request.getPermission())
-      .setParam(PARAM_TEMPLATE_ID, request.getTemplateId())
-      .setParam(PARAM_TEMPLATE_NAME, request.getTemplateName()));
-  }
-
   public void addUser(AddUserRequest request) {
     call(new PostRequest(path("add_user"))
       .setParam(PARAM_USER_LOGIN, request.getLogin())
