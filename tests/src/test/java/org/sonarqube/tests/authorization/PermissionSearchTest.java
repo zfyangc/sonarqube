@@ -30,7 +30,6 @@ import org.sonarqube.ws.Permissions;
 import org.sonarqube.ws.Permissions.Permission;
 import org.sonarqube.ws.Permissions.SearchTemplatesWsResponse;
 import org.sonarqube.ws.client.PostRequest;
-import org.sonarqube.ws.client.permission.RemoveUserFromTemplateRequest;
 import org.sonarqube.ws.client.permission.SearchTemplatesRequest;
 import org.sonarqube.ws.client.permission.UsersRequest;
 import org.sonarqube.ws.client.permissions.*;
@@ -135,7 +134,7 @@ public class PermissionSearchTest {
         .setTemplateName("my-new-template")
         .setGroupName(GROUP_NAME));
 
-    tester.wsClient().permissionsOld().removeUserFromTemplate(
+    tester.wsClient().permissions().removeUserFromTemplate(
       new RemoveUserFromTemplateRequest()
         .setPermission("admin")
         .setTemplateName("my-new-template")

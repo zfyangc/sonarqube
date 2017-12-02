@@ -77,28 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void removeUserFromTemplate_does_POST_on_Ws_remove_user_from_template() {
-    underTest.removeUserFromTemplate(new RemoveUserFromTemplateRequest()
-      .setPermission(PERMISSION_VALUE)
-      .setLogin(LOGIN_VALUE)
-      .setTemplateId(TEMPLATE_ID_VALUE)
-      .setTemplateName(TEMPLATE_NAME_VALUE)
-      .setOrganization(ORGANIZATION_VALUE)
-    );
-
-    assertThat(serviceTester.getPostParser()).isNull();
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("remove_user_from_template")
-      .hasParam(PARAM_PERMISSION, PERMISSION_VALUE)
-      .hasParam(PARAM_USER_LOGIN, LOGIN_VALUE)
-      .hasParam(PARAM_TEMPLATE_ID, TEMPLATE_ID_VALUE)
-      .hasParam(PARAM_TEMPLATE_NAME, TEMPLATE_NAME_VALUE)
-      .hasParam(PARAM_ORGANIZATION, ORGANIZATION_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void searchGlobalPermissions_does_GET_on_Ws_search_global_permissions() {
     underTest.searchGlobalPermissions();
 
