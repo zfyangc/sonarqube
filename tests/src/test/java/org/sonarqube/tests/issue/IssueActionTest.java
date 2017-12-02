@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.Issues.Issue;
-import org.sonarqube.ws.client.issue.EditCommentRequest;
 import org.sonarqube.ws.client.issue.SearchRequest;
 import org.sonarqube.ws.client.issue.SetSeverityRequest;
 import org.sonarqube.ws.client.issues.AddCommentRequest;
@@ -107,18 +106,6 @@ public class IssueActionTest extends AbstractIssueTest {
 
     Issue reloaded = issueRule.getByKey(randomIssue.getKey());
     assertThat(reloaded.getComments().getCommentsList()).isEmpty();
-  }
-
-  @Test
-  public void edit_comment() throws Exception {
-    Issues.Comment comment = issuesService.addComment(new AddCommentRequest().setIssue(randomIssue.getKey()).setText("this is my *comment*")).getIssue().getComments().getComments(0);
-    Issues.Comment editedComment = issuesServiceOld.editComment(new EditCommentRequest(comment.getKey(), "new *comment*")).getIssue().getComments().getComments(0);
-    assertThat(editedComment.getHtmlText()).isEqualTo("new <strong>comment</strong>");
-
-    // reload issue
-    Issue reloaded = issueRule.getByKey(randomIssue.getKey());
-    assertThat(reloaded.getComments().getCommentsList()).hasSize(1);
-    assertThat(reloaded.getComments().getComments(0).getHtmlText()).isEqualTo("new <strong>comment</strong>");
   }
 
   /**

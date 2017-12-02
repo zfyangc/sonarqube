@@ -97,13 +97,6 @@ public class IssuesService extends BaseService {
     super(wsConnector, CONTROLLER_ISSUES);
   }
 
-  public Issues.Operation editComment(EditCommentRequest request) {
-    return call(new PostRequest(path(ACTION_EDIT_COMMENT))
-      .setParam(PARAM_COMMENT, request.getComment())
-      .setParam(PARAM_TEXT, request.getText()),
-      Issues.Operation.parser());
-  }
-
   public SearchWsResponse search(SearchRequest request) {
     return call(
       new GetRequest(path(ACTION_SEARCH))
