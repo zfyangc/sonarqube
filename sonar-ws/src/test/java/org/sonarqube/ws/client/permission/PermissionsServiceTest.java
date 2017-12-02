@@ -77,28 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void addUser_does_POST_on_Ws_add_user() {
-    underTest.addUser(new AddUserRequest()
-      .setLogin(LOGIN_VALUE)
-      .setOrganization(ORGANIZATION_VALUE)
-      .setPermission(PERMISSION_VALUE)
-      .setProjectId(PROJECT_ID_VALUE)
-      .setProjectKey(PROJECT_KEY_VALUE)
-    );
-
-    assertThat(serviceTester.getPostParser()).isNull();
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("add_user")
-      .hasParam(PARAM_USER_LOGIN, LOGIN_VALUE)
-      .hasParam(PARAM_ORGANIZATION, ORGANIZATION_VALUE)
-      .hasParam(PARAM_PERMISSION, PERMISSION_VALUE)
-      .hasParam(PARAM_PROJECT_ID, PROJECT_ID_VALUE)
-      .hasParam(PARAM_PROJECT_KEY, PROJECT_KEY_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void addUserToTemplate_does_POST_on_Ws_add_user_to_template() {
     underTest.addUserToTemplate(new AddUserToTemplateRequest()
       .setOrganization(ORGANIZATION_VALUE)

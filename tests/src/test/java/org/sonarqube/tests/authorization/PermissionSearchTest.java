@@ -32,7 +32,6 @@ import org.sonarqube.ws.Permissions.SearchTemplatesWsResponse;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.permission.AddProjectCreatorToTemplateRequest;
 import org.sonarqube.ws.client.permission.AddUserToTemplateRequest;
-import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.sonarqube.ws.client.permission.CreateTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveGroupFromTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveProjectCreatorFromTemplateRequest;
@@ -41,6 +40,7 @@ import org.sonarqube.ws.client.permission.SearchTemplatesRequest;
 import org.sonarqube.ws.client.permission.UsersRequest;
 import org.sonarqube.ws.client.permissions.AddGroupRequest;
 import org.sonarqube.ws.client.permissions.AddGroupToTemplateRequest;
+import org.sonarqube.ws.client.permissions.AddUserRequest;
 import org.sonarqube.ws.client.permissions.GroupsRequest;
 import util.ItUtils;
 
@@ -78,7 +78,7 @@ public class PermissionSearchTest {
 
   @Test
   public void permission_web_services() {
-    tester.wsClient().permissionsOld().addUser(
+    tester.wsClient().permissions().addUser(
       new AddUserRequest()
         .setPermission("admin")
         .setLogin(LOGIN));

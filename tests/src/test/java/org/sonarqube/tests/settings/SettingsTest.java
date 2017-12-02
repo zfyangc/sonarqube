@@ -35,9 +35,9 @@ import org.junit.rules.RuleChain;
 import org.sonarqube.tests.Category1Suite;
 import org.sonarqube.ws.Settings;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.sonarqube.ws.client.permission.RemoveGroupRequest;
 import org.sonarqube.ws.client.permissions.AddGroupRequest;
+import org.sonarqube.ws.client.permissions.AddUserRequest;
 import org.sonarqube.ws.client.settings.ResetRequest;
 import org.sonarqube.ws.client.settings.SetRequest;
 import org.sonarqube.ws.client.settings.SettingsService;
@@ -90,7 +90,7 @@ public class SettingsTest {
     userSettingsService = newUserWsClient(orchestrator, "setting-user", "setting-user").settings();
 
     // User with 'Execute Analysis' permission
-    adminWsClient.permissionsOld().addUser(new AddUserRequest().setLogin("scanner-user").setPermission("scan"));
+    adminWsClient.permissions().addUser(new AddUserRequest().setLogin("scanner-user").setPermission("scan"));
     scanSettingsService = newUserWsClient(orchestrator, "scanner-user", "scanner-user").settings();
 
     // User with 'Administer System' permission but without 'Execute Analysis' permission

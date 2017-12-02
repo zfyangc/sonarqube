@@ -31,8 +31,8 @@ import org.junit.Test;
 import org.sonarqube.ws.Users;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.sonarqube.ws.client.permissions.AddGroupRequest;
+import org.sonarqube.ws.client.permissions.AddUserRequest;
 import org.sonarqube.ws.client.qualityprofile.ChangeParentRequest;
 import org.sonarqube.ws.client.qualityprofile.CreateRequest;
 import org.subethamail.wiser.Wiser;
@@ -77,7 +77,7 @@ public class BuiltInQualityProfilesNotificationTest {
     userRule = UserRule.from(orchestrator);
     Users.CreateWsResponse.User profileAdmin1 = userRule.generate();
     WsClient wsClient = ItUtils.newAdminWsClient(orchestrator);
-    wsClient.permissionsOld().addUser(new AddUserRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
+    wsClient.permissions().addUser(new AddUserRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
 
     orchestrator.restartServer();
 
@@ -100,7 +100,7 @@ public class BuiltInQualityProfilesNotificationTest {
     // Create a quality profile administrator (user having direct permission)
     Users.CreateWsResponse.User profileAdmin1 = userRule.generate();
     WsClient wsClient = ItUtils.newAdminWsClient(orchestrator);
-    wsClient.permissionsOld().addUser(new AddUserRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
+    wsClient.permissions().addUser(new AddUserRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
     // Create a quality profile administrator (user having permission from a group)
     Users.CreateWsResponse.User profileAdmin2 = userRule.generate();
     String groupName = randomAlphanumeric(20);
@@ -156,7 +156,7 @@ public class BuiltInQualityProfilesNotificationTest {
     userRule = UserRule.from(orchestrator);
     Users.CreateWsResponse.User profileAdmin1 = userRule.generate();
     WsClient wsClient = ItUtils.newAdminWsClient(orchestrator);
-    wsClient.permissionsOld().addUser(new AddUserRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
+    wsClient.permissions().addUser(new AddUserRequest().setLogin(profileAdmin1.getLogin()).setPermission("profileadmin"));
 
     // uninstall plugin V1
     wsClient.wsConnector().call(new PostRequest("api/plugins/uninstall").setParam("key", "foo")).failIfNotSuccessful();
