@@ -57,16 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public void removeGroup(RemoveGroupRequest request) {
-    call(new PostRequest(path("remove_group"))
-      .setParam(PARAM_ORGANIZATION, request.getOrganization())
-      .setParam(PARAM_PERMISSION, request.getPermission())
-      .setParam(PARAM_GROUP_ID, request.getGroupId())
-      .setParam(PARAM_GROUP_NAME, request.getGroupName())
-      .setParam(PARAM_PROJECT_ID, request.getProjectId())
-      .setParam(PARAM_PROJECT_KEY, request.getProjectKey()));
-  }
-
   public void removeGroupFromTemplate(RemoveGroupFromTemplateRequest request) {
     call(new PostRequest(path("remove_group_from_template"))
       .setParam(PARAM_ORGANIZATION, request.getOrganization())

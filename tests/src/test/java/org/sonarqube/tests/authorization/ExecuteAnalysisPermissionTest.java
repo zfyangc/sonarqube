@@ -27,9 +27,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonarqube.qa.util.Tester;
-import org.sonarqube.ws.client.permission.RemoveGroupRequest;
 import org.sonarqube.ws.client.permissions.AddGroupRequest;
 import org.sonarqube.ws.client.permissions.AddProjectCreatorToTemplateRequest;
+import org.sonarqube.ws.client.permissions.RemoveGroupRequest;
 import org.sonarqube.ws.client.project.UpdateVisibilityRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -128,7 +128,7 @@ public class ExecuteAnalysisPermissionTest {
   }
 
   private void removeGlobalPermission(String groupName, String permission) {
-    tester.wsClient().permissionsOld().removeGroup(new RemoveGroupRequest().setGroupName(groupName).setPermission(permission));
+    tester.wsClient().permissions().removeGroup(new RemoveGroupRequest().setGroupName(groupName).setPermission(permission));
   }
 
   private static void executeLoggedAnalysis() {

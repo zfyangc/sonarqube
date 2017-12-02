@@ -27,10 +27,10 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Projects.CreateWsResponse.Project;
-import org.sonarqube.ws.client.permission.RemoveGroupRequest;
 import org.sonarqube.ws.client.permission.RemoveUserRequest;
 import org.sonarqube.ws.client.permissions.AddGroupRequest;
 import org.sonarqube.ws.client.permissions.AddUserRequest;
+import org.sonarqube.ws.client.permissions.RemoveGroupRequest;
 import org.sonarqube.ws.client.project.CreateRequest;
 import util.ItUtils;
 
@@ -58,7 +58,7 @@ public class ProvisioningPermissionTest {
   @BeforeClass
   public static void init() {
     // remove default permission "provisioning" from anyone();
-    tester.wsClient().permissionsOld().removeGroup(new RemoveGroupRequest().setGroupName("anyone").setPermission("provisioning"));
+    tester.wsClient().permissions().removeGroup(new RemoveGroupRequest().setGroupName("anyone").setPermission("provisioning"));
 
     tester.users().generate(u -> u.setLogin(ADMIN_WITH_PROVISIONING).setPassword(PASSWORD));
     addUserPermission(ADMIN_WITH_PROVISIONING, "admin");
