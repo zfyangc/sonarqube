@@ -77,26 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void removeUser_does_POST_on_Ws_remove_user() {
-    underTest.removeUser(new RemoveUserRequest()
-      .setPermission(PERMISSION_VALUE)
-      .setLogin(LOGIN_VALUE)
-      .setProjectId(PROJECT_ID_VALUE)
-      .setProjectKey(PROJECT_KEY_VALUE)
-    );
-
-    assertThat(serviceTester.getPostParser()).isNull();
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("remove_user")
-      .hasParam(PARAM_PERMISSION, PERMISSION_VALUE)
-      .hasParam(PARAM_USER_LOGIN, LOGIN_VALUE)
-      .hasParam(PARAM_PROJECT_ID, PROJECT_ID_VALUE)
-      .hasParam(PARAM_PROJECT_KEY, PROJECT_KEY_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void removeUserFromTemplate_does_POST_on_Ws_remove_user_from_template() {
     underTest.removeUserFromTemplate(new RemoveUserFromTemplateRequest()
       .setPermission(PERMISSION_VALUE)

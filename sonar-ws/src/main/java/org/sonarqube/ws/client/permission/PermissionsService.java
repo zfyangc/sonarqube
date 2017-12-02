@@ -57,14 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public void removeUser(RemoveUserRequest request) {
-    call(new PostRequest(path("remove_user"))
-      .setParam(PARAM_PERMISSION, request.getPermission())
-      .setParam(PARAM_USER_LOGIN, request.getLogin())
-      .setParam(PARAM_PROJECT_ID, request.getProjectId())
-      .setParam(PARAM_PROJECT_KEY, request.getProjectKey()));
-  }
-
   public void removeUserFromTemplate(RemoveUserFromTemplateRequest request) {
     call(new PostRequest(path("remove_user_from_template"))
       .setParam(PARAM_ORGANIZATION, request.getOrganization())

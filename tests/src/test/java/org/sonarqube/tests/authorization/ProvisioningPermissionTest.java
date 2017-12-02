@@ -27,10 +27,10 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Projects.CreateWsResponse.Project;
-import org.sonarqube.ws.client.permission.RemoveUserRequest;
 import org.sonarqube.ws.client.permissions.AddGroupRequest;
 import org.sonarqube.ws.client.permissions.AddUserRequest;
 import org.sonarqube.ws.client.permissions.RemoveGroupRequest;
+import org.sonarqube.ws.client.permissions.RemoveUserRequest;
 import org.sonarqube.ws.client.project.CreateRequest;
 import util.ItUtils;
 
@@ -134,6 +134,6 @@ public class ProvisioningPermissionTest {
   }
 
   private static void removeUserPermission(String login, String permission) {
-    tester.wsClient().permissionsOld().removeUser(new RemoveUserRequest().setLogin(login).setPermission(permission));
+    tester.wsClient().permissions().removeUser(new RemoveUserRequest().setLogin(login).setPermission(permission));
   }
 }
