@@ -77,35 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void bulk_apply_template() {
-    underTest.bulkApplyTemplate(new BulkApplyTemplateRequest()
-      .setOrganization(ORGANIZATION_VALUE)
-      .setTemplateId(TEMPLATE_ID_VALUE)
-      .setTemplateName(TEMPLATE_NAME_VALUE)
-      .setQualifiers(Arrays.asList("TRK", "VW"))
-      .setQuery(QUERY_VALUE)
-      .setVisibility("private")
-      .setAnalyzedBefore("2017-04-01")
-      .setOnProvisionedOnly(true)
-      .setProjects(Arrays.asList("P1", "P2")));
-
-    assertThat(serviceTester.getPostParser()).isNull();
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("bulk_apply_template")
-      .hasParam(PARAM_ORGANIZATION, ORGANIZATION_VALUE)
-      .hasParam(PARAM_TEMPLATE_ID, TEMPLATE_ID_VALUE)
-      .hasParam(PARAM_TEMPLATE_NAME, TEMPLATE_NAME_VALUE)
-      .hasParam("q", QUERY_VALUE)
-      .hasParam(PARAM_QUALIFIERS, "TRK,VW")
-      .hasParam(PARAM_VISIBILITY, "private")
-      .hasParam(PARAM_ANALYZED_BEFORE, "2017-04-01")
-      .hasParam(PARAM_ON_PROVISIONED_ONLY, "true")
-      .hasParam(PARAM_PROJECTS, "P1,P2")
-      .andNoOtherParam();
-  }
-
-  @Test
   public void createTemplate_does_POST_on_Ws_create_template() {
     underTest.createTemplate(new CreateTemplateRequest()
       .setOrganization(ORGANIZATION_VALUE)

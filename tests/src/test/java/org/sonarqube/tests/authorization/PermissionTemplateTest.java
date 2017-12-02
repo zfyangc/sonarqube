@@ -38,9 +38,9 @@ import org.sonarqube.ws.Projects.CreateWsResponse.Project;
 import org.sonarqube.ws.Users.CreateWsResponse;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.components.SearchProjectsRequest;
-import org.sonarqube.ws.client.permission.BulkApplyTemplateRequest;
 import org.sonarqube.ws.client.permission.CreateTemplateRequest;
 import org.sonarqube.ws.client.permissions.ApplyTemplateRequest;
+import org.sonarqube.ws.client.permissions.BulkApplyTemplateRequest;
 import org.sonarqube.ws.client.permissions.PermissionsService;
 import org.sonarqube.ws.client.permission.UsersRequest;
 import org.sonarqube.ws.client.permissions.AddUserToTemplateRequest;
@@ -99,7 +99,7 @@ public class PermissionTemplateTest {
     Project project2 = createPrivateProject(organization);
     Project untouchedProject = createPrivateProject(organization);
 
-    tester.wsClient().permissionsOld().bulkApplyTemplate(new BulkApplyTemplateRequest()
+    tester.wsClient().permissions().bulkApplyTemplate(new BulkApplyTemplateRequest()
       .setOrganization(organization.getKey())
       .setTemplateId(template.getId())
       .setProjects(Arrays.asList(project1.getKey(), project2.getKey())));

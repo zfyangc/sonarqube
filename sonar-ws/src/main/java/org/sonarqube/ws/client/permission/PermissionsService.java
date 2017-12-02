@@ -57,19 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public void bulkApplyTemplate(BulkApplyTemplateRequest request) {
-    call(new PostRequest(path("bulk_apply_template"))
-      .setParam(PARAM_ORGANIZATION, request.getOrganization())
-      .setParam(PARAM_TEMPLATE_ID, request.getTemplateId())
-      .setParam(PARAM_TEMPLATE_NAME, request.getTemplateName())
-      .setParam("q", request.getQuery())
-      .setParam(ProjectsWsParameters.PARAM_QUALIFIERS, inlineMultipleParamValue(request.getQualifiers()))
-      .setParam(ProjectsWsParameters.PARAM_VISIBILITY, request.getVisibility())
-      .setParam(ProjectsWsParameters.PARAM_ANALYZED_BEFORE, request.getAnalyzedBefore())
-      .setParam(ProjectsWsParameters.PARAM_ON_PROVISIONED_ONLY, request.isOnProvisionedOnly())
-      .setParam(ProjectsWsParameters.PARAM_PROJECTS, inlineMultipleParamValue(request.getProjects())));
-  }
-
   public CreateTemplateWsResponse createTemplate(CreateTemplateRequest request) {
     PostRequest post = new PostRequest(path("create_template"))
       .setParam(PARAM_ORGANIZATION, request.getOrganization())
