@@ -34,6 +34,7 @@ import org.sonarqube.ws.Organizations.Organization;
 import org.sonarqube.ws.Users.CreateWsResponse.User;
 import org.sonarqube.ws.client.issues.SearchRequest;
 import org.sonarqube.ws.client.issues.SetTagsRequest;
+import org.sonarqube.ws.client.issues.TagsRequest;
 import org.sonarqube.ws.client.organizations.AddMemberRequest;
 import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.sonarqube.ws.client.project.CreateRequest;
@@ -122,14 +123,12 @@ public class IssueTagsTest {
 
   private void assertTags(@Nullable String userLogin, @Nullable String organization, String... expectedTags) {
     assertThat(
-      (List<String>) ItUtils.jsonToMap(
-        tester.as(userLogin)
-          .wsClient()
-          .issuesOld()
-          .getTags(organization)
-          .content())
-        .get("tags")).containsExactly(
-          expectedTags);
+      tester.as(userLogin)
+        .wsClient()
+        .issues()
+        .tags(new TagsRequest().setOrganization(organization))
+        .getTagsList())
+      .containsExactly(expectedTags);
   }
 
   private void analyzeProject(String projectKey) {
