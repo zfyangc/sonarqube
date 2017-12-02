@@ -30,7 +30,6 @@ import org.sonarqube.ws.Permissions;
 import org.sonarqube.ws.Permissions.Permission;
 import org.sonarqube.ws.Permissions.SearchTemplatesWsResponse;
 import org.sonarqube.ws.client.PostRequest;
-import org.sonarqube.ws.client.permission.AddProjectCreatorToTemplateRequest;
 import org.sonarqube.ws.client.permission.CreateTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveGroupFromTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveProjectCreatorFromTemplateRequest;
@@ -119,11 +118,10 @@ public class PermissionSearchTest {
         .setTemplateName("my-new-template")
         .setGroupName(GROUP_NAME));
 
-    tester.wsClient().permissionsOld().addProjectCreatorToTemplate(
-      AddProjectCreatorToTemplateRequest.builder()
+    tester.wsClient().permissions().addProjectCreatorToTemplate(
+      new AddProjectCreatorToTemplateRequest()
         .setPermission("admin")
-        .setTemplateName("my-new-template")
-        .build());
+        .setTemplateName("my-new-template"));
 
     SearchTemplatesWsResponse searchTemplatesWsResponse = tester.wsClient().permissionsOld().searchTemplates(
       new SearchTemplatesRequest()

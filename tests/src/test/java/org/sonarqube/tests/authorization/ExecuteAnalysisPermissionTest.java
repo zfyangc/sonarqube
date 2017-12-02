@@ -27,9 +27,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonarqube.qa.util.Tester;
-import org.sonarqube.ws.client.permission.AddProjectCreatorToTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveGroupRequest;
 import org.sonarqube.ws.client.permissions.AddGroupRequest;
+import org.sonarqube.ws.client.permissions.AddProjectCreatorToTemplateRequest;
 import org.sonarqube.ws.client.project.UpdateVisibilityRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,10 +112,9 @@ public class ExecuteAnalysisPermissionTest {
   @Test
   public void execute_analysis_with_scan_on_default_template() {
     removeGlobalPermission("anyone", "scan");
-    tester.wsClient().permissionsOld().addProjectCreatorToTemplate(AddProjectCreatorToTemplateRequest.builder()
+    tester.wsClient().permissions().addProjectCreatorToTemplate(new AddProjectCreatorToTemplateRequest()
       .setPermission("scan")
-      .setTemplateId("default_template")
-      .build());
+      .setTemplateId("default_template"));
 
     runProjectAnalysis(orchestrator, "shared/xoo-sample", "sonar.login", USER_LOGIN, "sonar.password", USER_PASSWORD, "sonar.projectKey", "ANOTHER_PROJECT_KEY");
   }
