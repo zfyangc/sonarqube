@@ -32,6 +32,7 @@ import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.Issues.BulkChangeWsResponse;
 import org.sonarqube.ws.client.issues.BulkChangeRequest;
 import org.sonarqube.ws.client.issues.IssuesService;
+import org.sonarqube.ws.client.issues.SearchRequest;
 import util.ProjectAnalysis;
 import util.ProjectAnalysisRule;
 import util.issue.IssueRule;

@@ -36,6 +36,7 @@ import org.sonarqube.ws.Organizations;
 import org.sonarqube.ws.Users.CreateWsResponse.User;
 import org.sonarqube.ws.client.issues.AssignRequest;
 import org.sonarqube.ws.client.issues.BulkChangeRequest;
+import org.sonarqube.ws.client.issues.SearchRequest;
 import org.sonarqube.ws.client.project.CreateRequest;
 import org.sonarqube.ws.client.qualityprofile.AddProjectRequest;
 import util.issue.IssueRule;
@@ -130,9 +131,9 @@ public class OrganizationIssueAssignTest {
       .bulkChange(new BulkChangeRequest().setIssues(issues).setAssign(singletonList(user.getLogin())));
 
     assertThat(response.getIgnored()).isGreaterThan(0);
-    assertThat(issueRule.search(new SearchRequest().setProjectKeys(singletonList("sample"))).getIssuesList()).extracting(Issue::getAssignee)
+    assertThat(issueRule.search(new SearchRequest().setProjects(singletonList("sample"))).getIssuesList()).extracting(Issue::getAssignee)
       .containsOnly(user.getLogin());
-    assertThat(issueRule.search(new SearchRequest().setProjectKeys(singletonList("sample2"))).getIssuesList()).extracting(Issue::hasAssignee)
+    assertThat(issueRule.search(new SearchRequest().setProjects(singletonList("sample2"))).getIssuesList()).extracting(Issue::hasAssignee)
       .containsOnly(false);
   }
 
