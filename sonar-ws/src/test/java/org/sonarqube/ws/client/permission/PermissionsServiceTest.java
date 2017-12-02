@@ -77,17 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void searchGlobalPermissions_does_GET_on_Ws_search_global_permissions() {
-    underTest.searchGlobalPermissions();
-
-    assertThat(serviceTester.getGetParser()).isSameAs(Permissions.WsSearchGlobalPermissionsResponse.parser());
-    GetRequest getRequest = serviceTester.getGetRequest();
-    serviceTester.assertThat(getRequest)
-      .hasPath("search_global_permissions")
-      .andNoOtherParam();
-  }
-
-  @Test
   public void searchProjectPermissions_does_GET_on_Ws_search_project_permissions() {
     underTest.searchProjectPermissions(new SearchProjectPermissionsRequest()
       .setProjectId(PROJECT_ID_VALUE)

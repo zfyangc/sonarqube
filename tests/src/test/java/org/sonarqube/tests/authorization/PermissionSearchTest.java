@@ -78,7 +78,7 @@ public class PermissionSearchTest {
         .setPermission("admin")
         .setGroupName(GROUP_NAME));
 
-    Permissions.WsSearchGlobalPermissionsResponse searchGlobalPermissionsWsResponse = tester.wsClient().permissionsOld().searchGlobalPermissions();
+    Permissions.WsSearchGlobalPermissionsResponse searchGlobalPermissionsWsResponse = tester.wsClient().permissions().searchGlobalPermissions(new SearchGlobalPermissionsRequest());
     assertThat(searchGlobalPermissionsWsResponse.getPermissionsList().get(0).getKey()).isEqualTo("admin");
     assertThat(searchGlobalPermissionsWsResponse.getPermissionsList().get(0).getUsersCount()).isEqualTo(1);
     // by default, a group has the global admin permission

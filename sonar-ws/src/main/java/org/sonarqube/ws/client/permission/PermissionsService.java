@@ -57,11 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public WsSearchGlobalPermissionsResponse searchGlobalPermissions() {
-    GetRequest get = new GetRequest(path("search_global_permissions"));
-    return call(get, WsSearchGlobalPermissionsResponse.parser());
-  }
-
   public SearchProjectPermissionsWsResponse searchProjectPermissions(SearchProjectPermissionsRequest request) {
     GetRequest get = new GetRequest(path("search_project_permissions"))
       .setParam(PARAM_PROJECT_ID, request.getProjectId())
