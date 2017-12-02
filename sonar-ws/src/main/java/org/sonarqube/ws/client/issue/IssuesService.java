@@ -96,14 +96,6 @@ public class IssuesService extends BaseService {
     super(wsConnector, CONTROLLER_ISSUES);
   }
 
-  public Issues.Operation setType(SetTypeRequest request) {
-    return call(new PostRequest(path(ACTION_SET_TYPE))
-      .setParam(PARAM_ISSUE, request.getIssue())
-      .setParam(PARAM_TYPE, request.getType()),
-      Issues.Operation.parser());
-  }
-
-
   public Issues.Operation setTags(String issue, String... tags) {
     return call(new PostRequest(path(ACTION_SET_TAGS))
         .setParam(PARAM_ISSUE, issue)
