@@ -97,13 +97,6 @@ public class IssuesService extends BaseService {
     super(wsConnector, CONTROLLER_ISSUES);
   }
 
-  public Issues.Operation doTransition(DoTransitionRequest request) {
-    return call(new PostRequest(path(ACTION_DO_TRANSITION))
-      .setParam(PARAM_ISSUE, request.getIssue())
-      .setParam(PARAM_TRANSITION, request.getTransition()),
-      Issues.Operation.parser());
-  }
-
   public Issues.Operation deleteComment(String commentKey) {
     return call(new PostRequest(path(ACTION_DELETE_COMMENT))
       .setParam(PARAM_COMMENT, commentKey),

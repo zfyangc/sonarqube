@@ -38,18 +38,6 @@ public class IssuesServiceTest {
   private IssuesService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void do_transition() {
-    underTest.doTransition(new DoTransitionRequest("ABCD", "confirm"));
-    PostRequest request = serviceTester.getPostRequest();
-
-    assertThat(serviceTester.getPostParser()).isSameAs(Issues.Operation.parser());
-    serviceTester.assertThat(request)
-      .hasParam("issue", "ABCD")
-      .hasParam("transition", "confirm")
-      .andNoOtherParam();
-  }
-
-  @Test
   public void delete_comment() {
     underTest.deleteComment("ABCD");
     PostRequest request = serviceTester.getPostRequest();
