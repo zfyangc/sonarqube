@@ -27,10 +27,10 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Projects.CreateWsResponse.Project;
-import org.sonarqube.ws.client.permission.AddGroupRequest;
 import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.sonarqube.ws.client.permission.RemoveGroupRequest;
 import org.sonarqube.ws.client.permission.RemoveUserRequest;
+import org.sonarqube.ws.client.permissions.AddGroupRequest;
 import org.sonarqube.ws.client.project.CreateRequest;
 import util.ItUtils;
 
@@ -77,7 +77,7 @@ public class ProvisioningPermissionTest {
 
   @AfterClass
   public static void restoreData() throws Exception {
-    tester.wsClient().permissionsOld().addGroup(new AddGroupRequest().setGroupName("anyone").setPermission("provisioning"));
+    tester.wsClient().permissions().addGroup(new AddGroupRequest().setGroupName("anyone").setPermission("provisioning"));
   }
 
   /**

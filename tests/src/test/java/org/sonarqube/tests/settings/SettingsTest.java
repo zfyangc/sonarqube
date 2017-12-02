@@ -35,9 +35,9 @@ import org.junit.rules.RuleChain;
 import org.sonarqube.tests.Category1Suite;
 import org.sonarqube.ws.Settings;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.permission.AddGroupRequest;
 import org.sonarqube.ws.client.permission.AddUserRequest;
 import org.sonarqube.ws.client.permission.RemoveGroupRequest;
+import org.sonarqube.ws.client.permissions.AddGroupRequest;
 import org.sonarqube.ws.client.settings.ResetRequest;
 import org.sonarqube.ws.client.settings.SetRequest;
 import org.sonarqube.ws.client.settings.SettingsService;
@@ -101,7 +101,7 @@ public class SettingsTest {
   public static void tearDown() throws Exception {
     userRule.deactivateUsers("setting-user", "scanner-user");
     // Restore 'Execute Analysis' permission to anyone
-    adminWsClient.permissionsOld().addGroup(new AddGroupRequest().setGroupName("anyone").setPermission("scan"));
+    adminWsClient.permissions().addGroup(new AddGroupRequest().setGroupName("anyone").setPermission("scan"));
   }
 
   @After

@@ -77,29 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void addGroup_does_POST_on_Ws_add_group() {
-    underTest.addGroup(new AddGroupRequest()
-      .setOrganization(ORGANIZATION_VALUE)
-      .setPermission(PERMISSION_VALUE)
-      .setProjectId(PROJECT_ID_VALUE)
-      .setProjectKey(PROJECT_KEY_VALUE)
-      .setGroupId(GROUP_ID_VALUE)
-      .setGroupName(GROUP_NAME_VALUE));
-
-    assertThat(serviceTester.getPostParser()).isNull();
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("add_group")
-      .hasParam(PARAM_ORGANIZATION, ORGANIZATION_VALUE)
-      .hasParam(PARAM_PERMISSION, PERMISSION_VALUE)
-      .hasParam(PARAM_PROJECT_ID, PROJECT_ID_VALUE)
-      .hasParam(PARAM_PROJECT_KEY, PROJECT_KEY_VALUE)
-      .hasParam(PARAM_GROUP_ID, GROUP_ID_VALUE)
-      .hasParam(PARAM_GROUP_NAME, GROUP_NAME_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void addGroupToTemplate_does_POST_on_Ws_add_group_to_template() {
     underTest.addGroupToTemplate(
       new AddGroupToTemplateRequest()

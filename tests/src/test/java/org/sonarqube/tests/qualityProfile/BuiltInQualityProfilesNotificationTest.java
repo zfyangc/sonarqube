@@ -31,8 +31,8 @@ import org.junit.Test;
 import org.sonarqube.ws.Users;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.permission.AddGroupRequest;
 import org.sonarqube.ws.client.permission.AddUserRequest;
+import org.sonarqube.ws.client.permissions.AddGroupRequest;
 import org.sonarqube.ws.client.qualityprofile.ChangeParentRequest;
 import org.sonarqube.ws.client.qualityprofile.CreateRequest;
 import org.subethamail.wiser.Wiser;
@@ -105,7 +105,7 @@ public class BuiltInQualityProfilesNotificationTest {
     Users.CreateWsResponse.User profileAdmin2 = userRule.generate();
     String groupName = randomAlphanumeric(20);
     wsClient.wsConnector().call(new PostRequest("api/user_groups/create").setParam("name", groupName)).failIfNotSuccessful();
-    wsClient.permissionsOld().addGroup(new AddGroupRequest().setPermission("profileadmin").setGroupName(groupName));
+    wsClient.permissions().addGroup(new AddGroupRequest().setPermission("profileadmin").setGroupName(groupName));
     wsClient.wsConnector().call(new PostRequest("api/user_groups/add_user").setParam("name", groupName).setParam("login", profileAdmin2.getLogin())).failIfNotSuccessful();
     // Create a user not being quality profile administrator
     Users.CreateWsResponse.User noProfileAdmin = userRule.generate();
