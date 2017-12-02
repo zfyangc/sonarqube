@@ -29,10 +29,11 @@ import org.sonarqube.ws.Qualityprofiles.CreateWsResponse.QualityProfile;
 import org.sonarqube.ws.Rules;
 import org.sonarqube.ws.Projects.CreateWsResponse.Project;
 import org.sonarqube.ws.client.HttpException;
-import org.sonarqube.ws.client.qualityprofile.ActivateRuleRequest;
 import org.sonarqube.ws.client.qualityprofile.AddProjectRequest;
 import org.sonarqube.ws.client.qualityprofile.CreateRequest;
 import org.sonarqube.ws.client.qualityprofile.QualityProfilesService;
+import org.sonarqube.ws.client.qualityprofiles.ActivateRuleRequest;
+import org.sonarqube.ws.client.qualityprofiles.QualityprofilesService;
 import org.sonarqube.ws.client.rules.SearchRequest;
 
 import static java.util.Arrays.asList;
@@ -49,8 +50,12 @@ public class QProfileTester {
     this.session = session;
   }
 
-  public QualityProfilesService service() {
+  public QualityProfilesService serviceOld() {
     return session.wsClient().qualityProfilesOld();
+  }
+
+  public QualityprofilesService service() {
+    return session.wsClient().qualityProfiles();
   }
 
   @SafeVarargs
@@ -61,7 +66,7 @@ public class QProfileTester {
       .setLanguage("xoo")
       .setName("Profile" + id);
     stream(populators).forEach(p -> p.accept(request));
-    return service().create(request.build()).getProfile();
+    return serviceOld().create(request.build()).getProfile();
   }
 
   public QProfileTester activateRule(QualityProfile profile, String ruleKey) {
@@ -69,21 +74,20 @@ public class QProfileTester {
   }
 
   public QProfileTester activateRule(String profileKey, String ruleKey) {
-    ActivateRuleRequest request = ActivateRuleRequest.builder()
+    ActivateRuleRequest request = new ActivateRuleRequest()
       .setKey(profileKey)
-      .setRuleKey(ruleKey)
-      .build();
+      .setRule(ruleKey);
     service().activateRule(request);
     return this;
   }
 
   public QProfileTester deactivateRule(QualityProfile profile, String ruleKey) {
-    service().deactivateRule(profile.getKey(), ruleKey);
+    serviceOld().deactivateRule(profile.getKey(), ruleKey);
     return this;
   }
 
   public QProfileTester assignQProfileToProject(QualityProfile profile, Project project) {
-    service().addProject(AddProjectRequest.builder()
+    serviceOld().addProject(AddProjectRequest.builder()
       .setProjectKey(project.getKey())
       .setKey(profile.getKey())
       .build());

@@ -67,7 +67,7 @@ public class QualityProfilesWsTest {
     tester.qProfiles().activateRule(xooProfile, RULE_ONE_BUG_PER_LINE);
     tester.qProfiles().activateRule(xooProfile, RULE_ONE_ISSUE_PER_LINE);
 
-    ShowResponse result = tester.qProfiles().service().show(new ShowRequest().setKey(xooProfile.getKey()));
+    ShowResponse result = tester.qProfiles().serviceOld().show(new ShowRequest().setKey(xooProfile.getKey()));
 
     assertThat(result.getProfile())
       .extracting(QualityProfile::getName, QualityProfile::getLanguage, QualityProfile::getIsBuiltIn, QualityProfile::getIsDefault,
@@ -83,7 +83,7 @@ public class QualityProfilesWsTest {
     tester.qProfiles().activateRule(xooProfile, RULE_ONE_ISSUE_PER_LINE);
     SearchWsResponse.QualityProfile sonarWay = getProfile(org, p -> "Sonar way".equals(p.getName()) && "xoo".equals(p.getLanguage()) && p.getIsBuiltIn());
 
-    CompareToSonarWay result = tester.qProfiles().service().show(new ShowRequest()
+    CompareToSonarWay result = tester.qProfiles().serviceOld().show(new ShowRequest()
       .setKey(xooProfile.getKey())
       .setCompareToSonarWay(true)).getCompareToSonarWay();
 
@@ -108,7 +108,7 @@ public class QualityProfilesWsTest {
       .setParam("compareToProfile", sonarWay.getKey())).failIfNotSuccessful();
 
     // Check that the profile has no missing rule from the Sonar way profile
-    assertThat(tester.qProfiles().service().show(new ShowRequest()
+    assertThat(tester.qProfiles().serviceOld().show(new ShowRequest()
       .setKey(xooProfile.getKey())
       .setCompareToSonarWay(true)).getCompareToSonarWay())
       .extracting(CompareToSonarWay::getProfile, CompareToSonarWay::getProfileName, CompareToSonarWay::getMissingRuleCount)
@@ -160,7 +160,7 @@ public class QualityProfilesWsTest {
   }
 
   private SearchWsResponse.QualityProfile getProfile(Organization organization, Predicate<SearchWsResponse.QualityProfile> filter) {
-    return tester.qProfiles().service().search(new SearchRequest()
+    return tester.qProfiles().serviceOld().search(new SearchRequest()
       .setOrganizationKey(organization.getKey())).getProfilesList()
       .stream()
       .filter(filter)

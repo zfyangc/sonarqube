@@ -29,6 +29,9 @@ import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.ServiceTester;
 import org.sonarqube.ws.client.WsConnector;
+import org.sonarqube.ws.client.qualityprofiles.ActivateRuleRequest;
+
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -179,27 +182,6 @@ public class QualityProfilesServiceTest {
       .hasPath("deactivate_rule")
       .hasParam(PARAM_KEY, "P1")
       .hasParam(PARAM_RULE, "R1")
-      .andNoOtherParam();
-  }
-
-  @Test
-  public void activate_rule() {
-    underTest.activateRule(ActivateRuleRequest.builder()
-      .setRuleKey("R1")
-      .setKey("P1")
-      .setOrganization("O1")
-      .setParams("PS1")
-      .setSeverity(Severity.INFO)
-      .build());
-    PostRequest request = serviceTester.getPostRequest();
-
-    serviceTester.assertThat(request)
-      .hasPath("activate_rule")
-      .hasParam(PARAM_KEY, "P1")
-      .hasParam(PARAM_RULE, "R1")
-      .hasParam(PARAM_ORGANIZATION, "O1")
-      .hasParam(PARAM_PARAMS, "PS1")
-      .hasParam(PARAM_SEVERITY, Severity.INFO.toString())
       .andNoOtherParam();
   }
 

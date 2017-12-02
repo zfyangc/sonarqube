@@ -86,17 +86,6 @@ public class QualityProfilesService extends BaseService {
     super(wsConnector, CONTROLLER_QUALITY_PROFILES);
   }
 
-  public void activateRule(ActivateRuleRequest request) {
-    PostRequest httpRequest = new PostRequest(path(ACTION_ACTIVATE_RULE));
-    httpRequest.setParam(PARAM_ORGANIZATION, request.getOrganization().orElse(null));
-    httpRequest.setParam(PARAM_PARAMS, request.getParams().orElse(null));
-    httpRequest.setParam(PARAM_KEY, request.getKey());
-    httpRequest.setParam(PARAM_RESET, request.getReset().orElse(null));
-    httpRequest.setParam(PARAM_RULE, request.getRuleKey());
-    httpRequest.setParam(PARAM_SEVERITY, request.getSeverity().map(Enum::name).orElse(null));
-    call(httpRequest);
-  }
-
   public void deactivateRule(String profileKey, String ruleKey) {
     PostRequest httpRequest = new PostRequest(path(ACTION_DEACTIVATE_RULE));
     httpRequest.setParam(PARAM_KEY, profileKey);

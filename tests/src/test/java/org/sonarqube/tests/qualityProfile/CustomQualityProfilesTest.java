@@ -112,7 +112,7 @@ public class CustomQualityProfilesTest {
       .activateRule(profile, "xoo:OneIssuePerFile")
       .assertThatNumberOfActiveRulesEqualsTo(profile, 1);
 
-    adminSession.service().delete(profile.getKey());
+    adminSession.serviceOld().delete(profile.getKey());
     adminSession.assertThatNumberOfActiveRulesEqualsTo(profile, 0);
   }
 
@@ -127,10 +127,10 @@ public class CustomQualityProfilesTest {
 
     // Copied profile
     Qualityprofiles.SearchWsResponse.QualityProfile builtInProfile = getProfile(org, p -> p.getIsBuiltIn() && "Basic".equals(p.getName()) && "xoo".equals(p.getLanguage()));
-    Qualityprofiles.CopyWsResponse copyResponse = adminSession.service().copy(new CopyRequest(builtInProfile.getKey(), "My copy"));
+    Qualityprofiles.CopyWsResponse copyResponse = adminSession.serviceOld().copy(new CopyRequest(builtInProfile.getKey(), "My copy"));
 
     // Inherited profile from custom
-    QualityProfile inheritedProfile1 = adminSession.service().create(
+    QualityProfile inheritedProfile1 = adminSession.serviceOld().create(
       CreateRequest.builder()
         .setLanguage(parentProfile.getLanguage())
         .setOrganizationKey(org.getKey())
@@ -138,11 +138,11 @@ public class CustomQualityProfilesTest {
         .build())
       .getProfile();
 
-    adminSession.service().changeParent(
+    adminSession.serviceOld().changeParent(
       ChangeParentRequest.builder().setParentKey(parentProfile.getKey()).setProfileKey(inheritedProfile1.getKey()).build());
 
     // Inherited profile from builtIn
-    QualityProfile inheritedProfile2 = adminSession.service().create(
+    QualityProfile inheritedProfile2 = adminSession.serviceOld().create(
       CreateRequest.builder()
         .setLanguage(parentProfile.getLanguage())
         .setOrganizationKey(org.getKey())
@@ -150,15 +150,15 @@ public class CustomQualityProfilesTest {
         .build())
       .getProfile();
 
-    adminSession.service().changeParent(
+    adminSession.serviceOld().changeParent(
       ChangeParentRequest.builder().setParentKey(builtInProfile.getKey()).setProfileKey(inheritedProfile2.getKey()).build());
 
     tester.organizations().service().delete(new DeleteRequest().setOrganization(org.getKey()));
 
-    expectMissingError(() -> tester.qProfiles().service().search(new SearchRequest()
+    expectMissingError(() -> tester.qProfiles().serviceOld().search(new SearchRequest()
       .setOrganizationKey(org.getKey())));
 
-    tester.qProfiles().service().search(new SearchRequest()).getProfilesList()
+    tester.qProfiles().serviceOld().search(new SearchRequest()).getProfilesList()
       .forEach(p -> {
         assertThat(p.getOrganization()).isNotEqualTo(org.getKey());
         assertThat(p.getKey()).isNotIn(parentProfile.getKey(), copyResponse.getKey(), inheritedProfile1.getKey(), inheritedProfile2.getKey());
@@ -175,13 +175,13 @@ public class CustomQualityProfilesTest {
     QProfileTester adminSession = tester.as(adminOfOrg1.getLogin()).qProfiles();
 
     expectForbiddenError(() -> adminSession.createXooProfile(org2));
-    expectForbiddenError(() -> adminSession.service().delete(profileInOrg2.getKey()));
+    expectForbiddenError(() -> adminSession.serviceOld().delete(profileInOrg2.getKey()));
     expectForbiddenError(() -> adminSession.activateRule(profileInOrg2, "xoo:OneIssuePerFile"));
     expectForbiddenError(() -> adminSession.deactivateRule(profileInOrg2, "xoo:OneIssuePerFile"));
   }
 
   private void delete(QualityProfile profile) {
-    tester.qProfiles().service().delete(profile.getKey());
+    tester.qProfiles().serviceOld().delete(profile.getKey());
   }
 
   @Test
@@ -192,7 +192,7 @@ public class CustomQualityProfilesTest {
     TesterSession anonymousSession = tester.asAnonymous();
 
     expectUnauthorizedError(() -> anonymousSession.qProfiles().createXooProfile(org));
-    expectUnauthorizedError(() -> anonymousSession.qProfiles().service().delete(profile.getKey()));
+    expectUnauthorizedError(() -> anonymousSession.qProfiles().serviceOld().delete(profile.getKey()));
     expectUnauthorizedError(() -> anonymousSession.qProfiles().activateRule(profile, "xoo:OneIssuePerFile"));
     expectUnauthorizedError(() -> anonymousSession.qProfiles().deactivateRule(profile, "xoo:OneIssuePerFile"));
   }
@@ -209,7 +209,7 @@ public class CustomQualityProfilesTest {
     tester.qProfiles()
       .activateRule(profile, "xoo:OneIssuePerFile")
       .assertThatNumberOfActiveRulesEqualsTo(profile, 1);
-    tester.qProfiles().service().delete(profile.getKey());
+    tester.qProfiles().serviceOld().delete(profile.getKey());
     tester.qProfiles().assertThatNumberOfActiveRulesEqualsTo(profile, 0);
   }
 
@@ -220,7 +220,7 @@ public class CustomQualityProfilesTest {
 
     TesterSession adminSession = tester.as(user.getLogin());
     QualityProfile parentProfile = adminSession.qProfiles().createXooProfile(org);
-    QualityProfile inheritedProfile = adminSession.qProfiles().service().create(
+    QualityProfile inheritedProfile = adminSession.qProfiles().serviceOld().create(
       CreateRequest.builder()
         .setLanguage(parentProfile.getLanguage())
         .setOrganizationKey(org.getKey())
@@ -228,7 +228,7 @@ public class CustomQualityProfilesTest {
         .build())
       .getProfile();
 
-    adminSession.qProfiles().service().changeParent(
+    adminSession.qProfiles().serviceOld().changeParent(
       ChangeParentRequest.builder().setParentKey(parentProfile.getKey()).setProfileKey(inheritedProfile.getKey()).build());
 
     Qualityprofiles.SearchWsResponse.QualityProfile inheritedQualityPropfile = getProfile(org, p -> p.getKey().equals(inheritedProfile.getKey()));
@@ -237,7 +237,7 @@ public class CustomQualityProfilesTest {
     assertThat(inheritedQualityPropfile.getParentName()).isEqualTo(parentProfile.getName());
 
     // Remove inheritance
-    adminSession.qProfiles().service().changeParent(
+    adminSession.qProfiles().serviceOld().changeParent(
       new ChangeParentRequest(ChangeParentRequest.builder().setProfileKey(inheritedQualityPropfile.getKey())));
 
     inheritedQualityPropfile = getProfile(org, p -> p.getKey().equals(inheritedProfile.getKey()));
@@ -268,7 +268,7 @@ public class CustomQualityProfilesTest {
     assertThatQualityProfileIsUsedFor(projectKey, defaultProfile.getKey());
 
     QualityProfile newXooProfile = adminSession.qProfiles().createXooProfile(org);
-    adminSession.qProfiles().service().setDefault(new SetDefaultRequest(newXooProfile.getKey()));
+    adminSession.qProfiles().serviceOld().setDefault(new SetDefaultRequest(newXooProfile.getKey()));
 
     orchestrator.executeBuild(
       SonarScanner.create(projectDir("shared/xoo-sample"),
@@ -295,7 +295,7 @@ public class CustomQualityProfilesTest {
       .setParam("name", projectName)
       .setParam("organization", org.getKey()));
 
-    adminSession.qProfiles().service().addProject(AddProjectRequest.builder()
+    adminSession.qProfiles().serviceOld().addProject(AddProjectRequest.builder()
       .setKey(newXooProfile.getKey())
       .setProjectKey(projectKey)
       .build());
@@ -320,7 +320,7 @@ public class CustomQualityProfilesTest {
   }
 
   private Qualityprofiles.SearchWsResponse.QualityProfile getProfile(Organization organization, Predicate<Qualityprofiles.SearchWsResponse.QualityProfile> filter) {
-    return tester.qProfiles().service().search(new SearchRequest()
+    return tester.qProfiles().serviceOld().search(new SearchRequest()
       .setOrganizationKey(organization.getKey())).getProfilesList()
       .stream()
       .filter(filter)
