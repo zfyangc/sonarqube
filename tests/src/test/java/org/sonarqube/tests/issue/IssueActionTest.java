@@ -27,11 +27,7 @@ import org.junit.Test;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.Issues.Issue;
-import org.sonarqube.ws.client.issue.SetSeverityRequest;
-import org.sonarqube.ws.client.issues.AddCommentRequest;
-import org.sonarqube.ws.client.issues.AssignRequest;
-import org.sonarqube.ws.client.issues.IssuesService;
-import org.sonarqube.ws.client.issues.SearchRequest;
+import org.sonarqube.ws.client.issues.*;
 import util.ProjectAnalysis;
 import util.ProjectAnalysisRule;
 import util.issue.IssueRule;
@@ -54,7 +50,6 @@ public class IssueActionTest extends AbstractIssueTest {
   public Tester tester = new Tester(ORCHESTRATOR);
 
   private ProjectAnalysis projectAnalysis;
-  private org.sonarqube.ws.client.issue.IssuesService issuesServiceOld;
   private IssuesService issuesService;
 
   private Issue randomIssue;
@@ -66,7 +61,6 @@ public class IssueActionTest extends AbstractIssueTest {
 
     this.projectAnalysis = projectAnalysisRule.newProjectAnalysis(projectKey).withQualityProfile(qualityProfileKey);
     this.projectAnalysis.run();
-    this.issuesServiceOld = tester.wsClient().issuesOld();
     this.issuesService = tester.wsClient().issues();
     this.randomIssue = issueRule.getRandomIssue();
   }
@@ -119,7 +113,7 @@ public class IssueActionTest extends AbstractIssueTest {
     assertThat(searchIssuesBySeverities(componentKey, "BLOCKER")).isEmpty();
 
     // increase the severity of an issue
-    issuesServiceOld.setSeverity(new SetSeverityRequest(randomIssue.getKey(), "BLOCKER"));
+    issuesService.setSeverity(new SetSeverityRequest().setIssue(randomIssue.getKey()).setSeverity("BLOCKER"));
 
     assertThat(searchIssuesBySeverities(componentKey, "BLOCKER")).hasSize(1);
 

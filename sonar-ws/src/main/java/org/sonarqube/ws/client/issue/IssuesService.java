@@ -96,13 +96,6 @@ public class IssuesService extends BaseService {
     super(wsConnector, CONTROLLER_ISSUES);
   }
 
-  public Issues.Operation setSeverity(SetSeverityRequest request) {
-    return call(new PostRequest(path(ACTION_SET_SEVERITY))
-      .setParam(PARAM_ISSUE, request.getIssue())
-      .setParam(PARAM_SEVERITY, request.getSeverity()),
-      Issues.Operation.parser());
-  }
-
   public Issues.Operation setType(SetTypeRequest request) {
     return call(new PostRequest(path(ACTION_SET_TYPE))
       .setParam(PARAM_ISSUE, request.getIssue())

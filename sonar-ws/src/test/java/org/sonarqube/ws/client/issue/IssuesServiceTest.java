@@ -38,18 +38,6 @@ public class IssuesServiceTest {
   private IssuesService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void set_severity() {
-    underTest.setSeverity(new SetSeverityRequest("ABCD", "confirm"));
-    PostRequest request = serviceTester.getPostRequest();
-
-    assertThat(serviceTester.getPostParser()).isSameAs(Issues.Operation.parser());
-    serviceTester.assertThat(request)
-      .hasParam("issue", "ABCD")
-      .hasParam("severity", "confirm")
-      .andNoOtherParam();
-  }
-
-  @Test
   public void set_type() {
     underTest.setType(new SetTypeRequest("ABCD", "bugs"));
     PostRequest request = serviceTester.getPostRequest();
