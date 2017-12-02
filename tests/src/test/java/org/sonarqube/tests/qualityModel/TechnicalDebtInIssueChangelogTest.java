@@ -27,8 +27,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Issues;
-import org.sonarqube.ws.client.issue.SearchRequest;
 import org.sonarqube.ws.client.issues.ChangelogRequest;
+import org.sonarqube.ws.client.issues.SearchRequest;
 import util.ItUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,7 +59,7 @@ public class TechnicalDebtInIssueChangelogTest {
     orchestrator.executeBuild(SonarScanner.create(projectDir("shared/xoo-sample"))
       .setProperties("sonar.oneIssuePerFile.effortToFix", "10"));
 
-    Issues.Issue firstIssue = tester.wsClient().issuesOld().search(new SearchRequest()).getIssues(0);
+    Issues.Issue firstIssue = tester.wsClient().issues().search(new SearchRequest()).getIssues(0);
 
     List<Issues.ChangelogWsResponse.Changelog> changes = changelog(firstIssue.getKey()).getChangelogList();
     assertThat(changes).hasSize(1);

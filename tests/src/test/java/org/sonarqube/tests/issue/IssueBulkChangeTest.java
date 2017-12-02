@@ -30,7 +30,6 @@ import org.sonar.wsclient.base.HttpException;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.Issues.BulkChangeWsResponse;
-import org.sonarqube.ws.client.issue.SearchRequest;
 import org.sonarqube.ws.client.issues.BulkChangeRequest;
 import org.sonarqube.ws.client.issues.IssuesService;
 import util.ProjectAnalysis;

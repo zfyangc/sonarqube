@@ -27,11 +27,11 @@ import org.junit.Test;
 import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.Issues.Issue;
-import org.sonarqube.ws.client.issue.SearchRequest;
 import org.sonarqube.ws.client.issue.SetSeverityRequest;
 import org.sonarqube.ws.client.issues.AddCommentRequest;
 import org.sonarqube.ws.client.issues.AssignRequest;
 import org.sonarqube.ws.client.issues.IssuesService;
+import org.sonarqube.ws.client.issues.SearchRequest;
 import util.ProjectAnalysis;
 import util.ProjectAnalysisRule;
 import util.issue.IssueRule;
@@ -175,7 +175,7 @@ public class IssueActionTest extends AbstractIssueTest {
   }
 
   private static List<Issue> searchIssuesBySeverities(String projectKey, String severity) {
-    return issueRule.search(new SearchRequest().setProjectKeys(singletonList(projectKey)).setSeverities(singletonList(severity))).getIssuesList();
+    return issueRule.search(new SearchRequest().setProjects(singletonList(projectKey)).setSeverities(singletonList(severity))).getIssuesList();
   }
 
 }

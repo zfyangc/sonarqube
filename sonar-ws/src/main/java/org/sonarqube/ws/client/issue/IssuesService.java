@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.Issues.ChangelogWsResponse;
-import org.sonarqube.ws.Issues.SearchWsResponse;
 import org.sonarqube.ws.client.BaseService;
 import org.sonarqube.ws.client.GetRequest;
 import org.sonarqube.ws.client.PostRequest;
@@ -95,50 +94,6 @@ public class IssuesService extends BaseService {
 
   public IssuesService(WsConnector wsConnector) {
     super(wsConnector, CONTROLLER_ISSUES);
-  }
-
-  public SearchWsResponse search(SearchRequest request) {
-    return call(
-      new GetRequest(path(ACTION_SEARCH))
-        .setParam(DEPRECATED_PARAM_ACTION_PLANS, inlineMultipleParamValue(request.getActionPlans()))
-        .setParam(PARAM_ADDITIONAL_FIELDS, inlineMultipleParamValue(request.getAdditionalFields()))
-        .setParam(PARAM_ASC, request.getAsc())
-        .setParam(PARAM_ASSIGNED, request.getAssigned())
-        .setParam(PARAM_ASSIGNEES, inlineMultipleParamValue(request.getAssignees()))
-        .setParam(PARAM_AUTHORS, inlineMultipleParamValue(request.getAuthors()))
-        .setParam(PARAM_COMPONENT_KEYS, inlineMultipleParamValue(request.getComponentKeys()))
-        .setParam(PARAM_COMPONENT_ROOT_UUIDS, inlineMultipleParamValue(request.getComponentRootUuids()))
-        .setParam(PARAM_COMPONENT_ROOTS, inlineMultipleParamValue(request.getComponentRoots()))
-        .setParam(PARAM_COMPONENT_UUIDS, inlineMultipleParamValue(request.getComponentUuids()))
-        .setParam(PARAM_COMPONENTS, inlineMultipleParamValue(request.getComponents()))
-        .setParam(PARAM_CREATED_AFTER, request.getCreatedAfter())
-        .setParam(PARAM_CREATED_AT, request.getCreatedAt())
-        .setParam(PARAM_CREATED_BEFORE, request.getCreatedBefore())
-        .setParam(PARAM_CREATED_IN_LAST, request.getCreatedInLast())
-        .setParam(PARAM_DIRECTORIES, inlineMultipleParamValue(request.getDirectories()))
-        .setParam(PARAM_BRANCH, request.getBranch())
-        .setParam(FACET_MODE, request.getFacetMode())
-        .setParam(FACETS, inlineMultipleParamValue(request.getFacets()))
-        .setParam(PARAM_FILE_UUIDS, inlineMultipleParamValue(request.getFileUuids()))
-        .setParam(PARAM_ISSUES, inlineMultipleParamValue(request.getIssues()))
-        .setParam(PARAM_LANGUAGES, inlineMultipleParamValue(request.getLanguages()))
-        .setParam(PARAM_MODULE_UUIDS, inlineMultipleParamValue(request.getModuleUuids()))
-        .setParam(PARAM_ON_COMPONENT_ONLY, request.getOnComponentOnly())
-        .setParam(PAGE, request.getPage())
-        .setParam(PAGE_SIZE, request.getPageSize())
-        .setParam(PARAM_PROJECT_KEYS, inlineMultipleParamValue(request.getProjectKeys()))
-        .setParam(PARAM_PROJECT_UUIDS, inlineMultipleParamValue(request.getProjectUuids()))
-        .setParam(PARAM_PROJECTS, inlineMultipleParamValue(request.getProjects()))
-        .setParam(PARAM_RESOLUTIONS, inlineMultipleParamValue(request.getResolutions()))
-        .setParam(PARAM_RESOLVED, request.getResolved())
-        .setParam(PARAM_RULES, inlineMultipleParamValue(request.getRules()))
-        .setParam(SORT, request.getSort())
-        .setParam(PARAM_SEVERITIES, inlineMultipleParamValue(request.getSeverities()))
-        .setParam(PARAM_SINCE_LEAK_PERIOD, request.getSinceLeakPeriod())
-        .setParam(PARAM_STATUSES, inlineMultipleParamValue(request.getStatuses()))
-        .setParam(PARAM_TAGS, inlineMultipleParamValue(request.getTags()))
-        .setParam(PARAM_TYPES, inlineMultipleParamValue(request.getTypes())),
-      SearchWsResponse.parser());
   }
 
   public Issues.Operation setSeverity(SetSeverityRequest request) {

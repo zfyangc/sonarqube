@@ -25,17 +25,15 @@ import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang.time.DateUtils;
 import org.assertj.core.api.Fail;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.sonar.wsclient.base.HttpException;
 import org.sonar.wsclient.base.Paging;
 import org.sonar.wsclient.issue.Issue;
 import org.sonar.wsclient.issue.IssueQuery;
 import org.sonar.wsclient.issue.Issues;
+import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Common;
-import org.sonarqube.ws.client.issue.SearchRequest;
+import org.sonarqube.ws.client.issues.SearchRequest;
 import util.ItUtils;
 
 import static java.util.Arrays.asList;
@@ -54,6 +52,9 @@ public class IssueSearchTest extends AbstractIssueTest {
 
   private static int DEFAULT_PAGINATED_RESULTS = 100;
   private static int TOTAL_NB_ISSUES = 272;
+
+  @Rule
+  public Tester tester = new Tester(ORCHESTRATOR);
 
   @BeforeClass
   public static void prepareData() {
@@ -271,7 +272,7 @@ public class IssueSearchTest extends AbstractIssueTest {
   }
 
   private SearchWsResponse searchIssues(SearchRequest request) throws IOException {
-    return newAdminWsClient(ORCHESTRATOR).issuesOld().search(request);
+    return tester.wsClient().issues().search(request);
   }
 
 }

@@ -28,8 +28,8 @@ import org.sonarqube.qa.util.Tester;
 import org.sonarqube.ws.Issues;
 import org.sonarqube.ws.Issues.Issue;
 import org.sonarqube.ws.client.issues.IssuesService;
-import org.sonarqube.ws.client.issue.SearchRequest;
 import org.sonarqube.ws.client.issues.DoTransitionRequest;
+import org.sonarqube.ws.client.issues.SearchRequest;
 import util.ProjectAnalysis;
 import util.ProjectAnalysisRule;
 import util.issue.IssueRule;
@@ -311,7 +311,7 @@ public class IssueWorkflowTest extends AbstractIssueTest {
   }
 
   private Issues.SearchWsResponse searchIssues(SearchRequest request) {
-    return tester.wsClient().issuesOld().search(request);
+    return tester.wsClient().issues().search(request);
   }
 
 }
