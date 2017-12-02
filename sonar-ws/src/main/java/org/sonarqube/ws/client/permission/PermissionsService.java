@@ -70,14 +70,6 @@ public class PermissionsService extends BaseService {
       .setParam(PARAM_TEMPLATE_NAME, request.getTemplateName()));
   }
 
-  public UpdateTemplateWsResponse updateTemplate(UpdateTemplateRequest request) {
-    return call(new PostRequest(path("update_template"))
-      .setParam(PARAM_DESCRIPTION, request.getDescription())
-      .setParam(PARAM_ID, request.getId())
-      .setParam(PARAM_NAME, request.getName())
-      .setParam(PARAM_PROJECT_KEY_PATTERN, request.getProjectKeyPattern()), UpdateTemplateWsResponse.parser());
-  }
-
   public UsersWsResponse users(UsersRequest request) {
     return call(new GetRequest(path("users"))
       .setParam(PARAM_ORGANIZATION, request.getOrganization())

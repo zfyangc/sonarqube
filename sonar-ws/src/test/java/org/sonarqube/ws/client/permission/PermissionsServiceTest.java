@@ -109,26 +109,6 @@ public class PermissionsServiceTest {
   }
 
   @Test
-  public void updateTemplate_does_POST_on_Ws_update_template() {
-    underTest.updateTemplate(new UpdateTemplateRequest()
-      .setDescription(DESCRIPTION_VALUE)
-      .setId(TEMPLATE_ID_VALUE)
-      .setName(TEMPLATE_NAME_VALUE)
-      .setProjectKeyPattern(PROJECT_KEY_PATTERN_VALUE)
-    );
-
-    assertThat(serviceTester.getPostParser()).isSameAs(Permissions.UpdateTemplateWsResponse.parser());
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("update_template")
-      .hasParam(PARAM_DESCRIPTION, DESCRIPTION_VALUE)
-      .hasParam(PARAM_ID, TEMPLATE_ID_VALUE)
-      .hasParam(PARAM_NAME, TEMPLATE_NAME_VALUE)
-      .hasParam(PARAM_PROJECT_KEY_PATTERN, PROJECT_KEY_PATTERN_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void users() {
     underTest.users(new UsersRequest()
       .setOrganization("org")
