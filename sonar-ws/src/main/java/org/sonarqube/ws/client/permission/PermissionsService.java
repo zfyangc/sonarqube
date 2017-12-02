@@ -57,17 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public SearchProjectPermissionsWsResponse searchProjectPermissions(SearchProjectPermissionsRequest request) {
-    GetRequest get = new GetRequest(path("search_project_permissions"))
-      .setParam(PARAM_PROJECT_ID, request.getProjectId())
-      .setParam(PARAM_PROJECT_KEY, request.getProjectKey())
-      .setParam(PARAM_QUALIFIER, request.getQualifier())
-      .setParam("p", request.getPage())
-      .setParam("ps", request.getPageSize())
-      .setParam("q", request.getQuery());
-    return call(get, SearchProjectPermissionsWsResponse.parser());
-  }
-
   public SearchTemplatesWsResponse searchTemplates(SearchTemplatesRequest request) {
     GetRequest get = new GetRequest(path("search_templates"))
       .setParam("q", request.getQuery());

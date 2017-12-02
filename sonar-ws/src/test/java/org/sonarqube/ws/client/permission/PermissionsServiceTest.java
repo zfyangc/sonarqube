@@ -77,30 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void searchProjectPermissions_does_GET_on_Ws_search_project_permissions() {
-    underTest.searchProjectPermissions(new SearchProjectPermissionsRequest()
-      .setProjectId(PROJECT_ID_VALUE)
-      .setProjectKey(PROJECT_KEY_VALUE)
-      .setQualifier(QUALIFIER_VALUE)
-      .setPage(PAGE_VALUE)
-      .setPageSize(PAGE_SIZE_VALUE)
-      .setQuery(QUERY_VALUE)
-    );
-
-    assertThat(serviceTester.getGetParser()).isSameAs(Permissions.SearchProjectPermissionsWsResponse.parser());
-    GetRequest getRequest = serviceTester.getGetRequest();
-    serviceTester.assertThat(getRequest)
-      .hasPath("search_project_permissions")
-      .hasParam(PARAM_PROJECT_ID, PROJECT_ID_VALUE)
-      .hasParam(PARAM_PROJECT_KEY, PROJECT_KEY_VALUE)
-      .hasParam(PARAM_QUALIFIER, QUALIFIER_VALUE)
-      .hasParam(PARAM_P, PAGE_VALUE)
-      .hasParam(PARAM_PS, PAGE_SIZE_VALUE)
-      .hasParam(PARAM_Q, QUERY_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void searchTemplates_does_GET_on_Ws_search_templates() {
     underTest.searchTemplates(new SearchTemplatesRequest()
       .setQuery(QUERY_VALUE)
