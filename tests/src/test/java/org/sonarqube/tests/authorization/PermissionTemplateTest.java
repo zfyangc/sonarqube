@@ -38,12 +38,8 @@ import org.sonarqube.ws.Projects.CreateWsResponse.Project;
 import org.sonarqube.ws.Users.CreateWsResponse;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.components.SearchProjectsRequest;
-import org.sonarqube.ws.client.permission.CreateTemplateRequest;
-import org.sonarqube.ws.client.permissions.ApplyTemplateRequest;
-import org.sonarqube.ws.client.permissions.BulkApplyTemplateRequest;
-import org.sonarqube.ws.client.permissions.PermissionsService;
+import org.sonarqube.ws.client.permissions.*;
 import org.sonarqube.ws.client.permission.UsersRequest;
-import org.sonarqube.ws.client.permissions.AddUserToTemplateRequest;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -156,9 +152,8 @@ public class PermissionTemplateTest {
    */
   private void createAndApplyTemplate(Organization organization, Project project, CreateWsResponse.User user) {
     String templateName = "For user";
-    org.sonarqube.ws.client.permission.PermissionsService serviceOld = tester.wsClient().permissionsOld();
     PermissionsService service = tester.wsClient().permissions();
-    serviceOld.createTemplate(new CreateTemplateRequest()
+    service.createTemplate(new CreateTemplateRequest()
       .setOrganization(organization.getKey())
       .setName(templateName)
       .setDescription("Give admin permissions to single user"));
@@ -174,7 +169,7 @@ public class PermissionTemplateTest {
   }
 
   private CreateTemplateWsResponse createTemplate(Organization organization) {
-    return tester.wsClient().permissionsOld().createTemplate(new CreateTemplateRequest()
+    return tester.wsClient().permissions().createTemplate(new CreateTemplateRequest()
       .setOrganization(organization.getKey())
       .setName(randomAlphabetic(20)));
   }

@@ -77,26 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void createTemplate_does_POST_on_Ws_create_template() {
-    underTest.createTemplate(new CreateTemplateRequest()
-      .setOrganization(ORGANIZATION_VALUE)
-      .setName(NAME_VALUE)
-      .setDescription(DESCRIPTION_VALUE)
-      .setProjectKeyPattern(PROJECT_KEY_PATTERN_VALUE)
-    );
-
-    assertThat(serviceTester.getPostParser()).isSameAs(Permissions.CreateTemplateWsResponse.parser());
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("create_template")
-      .hasParam(PARAM_ORGANIZATION, ORGANIZATION_VALUE)
-      .hasParam(PARAM_NAME, NAME_VALUE)
-      .hasParam(PARAM_DESCRIPTION, DESCRIPTION_VALUE)
-      .hasParam(PARAM_PROJECT_KEY_PATTERN, PROJECT_KEY_PATTERN_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void deleteTemplate_does_POST_on_Ws_delete_template() {
     underTest.deleteTemplate(new DeleteTemplateRequest()
       .setTemplateId(TEMPLATE_ID_VALUE)

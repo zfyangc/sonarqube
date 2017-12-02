@@ -30,7 +30,6 @@ import org.sonarqube.ws.Permissions;
 import org.sonarqube.ws.Permissions.Permission;
 import org.sonarqube.ws.Permissions.SearchTemplatesWsResponse;
 import org.sonarqube.ws.client.PostRequest;
-import org.sonarqube.ws.client.permission.CreateTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveGroupFromTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveProjectCreatorFromTemplateRequest;
 import org.sonarqube.ws.client.permission.RemoveUserFromTemplateRequest;
@@ -100,7 +99,7 @@ public class PermissionSearchTest {
 
   @Test
   public void template_permission_web_services() {
-    Permissions.CreateTemplateWsResponse createTemplateWsResponse = tester.wsClient().permissionsOld().createTemplate(
+    Permissions.CreateTemplateWsResponse createTemplateWsResponse = tester.wsClient().permissions().createTemplate(
       new CreateTemplateRequest()
         .setName("my-new-template")
         .setDescription("template-used-in-tests"));

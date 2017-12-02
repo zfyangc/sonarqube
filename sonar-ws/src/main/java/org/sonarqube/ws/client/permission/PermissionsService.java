@@ -57,15 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public CreateTemplateWsResponse createTemplate(CreateTemplateRequest request) {
-    PostRequest post = new PostRequest(path("create_template"))
-      .setParam(PARAM_ORGANIZATION, request.getOrganization())
-      .setParam(PARAM_NAME, request.getName())
-      .setParam(PARAM_DESCRIPTION, request.getDescription())
-      .setParam(PARAM_PROJECT_KEY_PATTERN, request.getProjectKeyPattern());
-    return call(post, CreateTemplateWsResponse.parser());
-  }
-
   public void deleteTemplate(DeleteTemplateRequest request) {
     call(new PostRequest(path("delete_template"))
       .setParam(PARAM_ORGANIZATION, request.getOrganization())
