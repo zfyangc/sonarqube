@@ -97,12 +97,6 @@ public class IssuesService extends BaseService {
     super(wsConnector, CONTROLLER_ISSUES);
   }
 
-  public Issues.Operation deleteComment(String commentKey) {
-    return call(new PostRequest(path(ACTION_DELETE_COMMENT))
-      .setParam(PARAM_COMMENT, commentKey),
-      Issues.Operation.parser());
-  }
-
   public Issues.Operation editComment(EditCommentRequest request) {
     return call(new PostRequest(path(ACTION_EDIT_COMMENT))
       .setParam(PARAM_COMMENT, request.getComment())
