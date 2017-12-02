@@ -77,28 +77,6 @@ public class PermissionsServiceTest {
   private PermissionsService underTest = serviceTester.getInstanceUnderTest();
 
   @Test
-  public void applyTemplate_does_POST_on_Ws_apply_template() {
-    underTest.applyTemplate(new ApplyTemplateRequest()
-      .setOrganization(ORGANIZATION_VALUE)
-      .setProjectId(PROJECT_ID_VALUE)
-      .setProjectKey(PROJECT_KEY_VALUE)
-      .setTemplateId(TEMPLATE_ID_VALUE)
-      .setTemplateName(TEMPLATE_NAME_VALUE)
-    );
-
-    assertThat(serviceTester.getPostParser()).isNull();
-    PostRequest postRequest = serviceTester.getPostRequest();
-    serviceTester.assertThat(postRequest)
-      .hasPath("apply_template")
-      .hasParam(PARAM_ORGANIZATION, ORGANIZATION_VALUE)
-      .hasParam(PARAM_PROJECT_ID, PROJECT_ID_VALUE)
-      .hasParam(PARAM_PROJECT_KEY, PROJECT_KEY_VALUE)
-      .hasParam(PARAM_TEMPLATE_ID, TEMPLATE_ID_VALUE)
-      .hasParam(PARAM_TEMPLATE_NAME, TEMPLATE_NAME_VALUE)
-      .andNoOtherParam();
-  }
-
-  @Test
   public void bulk_apply_template() {
     underTest.bulkApplyTemplate(new BulkApplyTemplateRequest()
       .setOrganization(ORGANIZATION_VALUE)

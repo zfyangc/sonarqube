@@ -57,15 +57,6 @@ public class PermissionsService extends BaseService {
     super(wsConnector, PermissionsWsParameters.CONTROLLER);
   }
 
-  public void applyTemplate(ApplyTemplateRequest request) {
-    call(new PostRequest(path("apply_template"))
-      .setParam(PARAM_ORGANIZATION, request.getOrganization())
-      .setParam(PARAM_PROJECT_ID, request.getProjectId())
-      .setParam(PARAM_PROJECT_KEY, request.getProjectKey())
-      .setParam(PARAM_TEMPLATE_ID, request.getTemplateId())
-      .setParam(PARAM_TEMPLATE_NAME, request.getTemplateName()));
-  }
-
   public void bulkApplyTemplate(BulkApplyTemplateRequest request) {
     call(new PostRequest(path("bulk_apply_template"))
       .setParam(PARAM_ORGANIZATION, request.getOrganization())

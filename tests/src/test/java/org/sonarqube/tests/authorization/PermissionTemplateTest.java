@@ -38,9 +38,9 @@ import org.sonarqube.ws.Projects.CreateWsResponse.Project;
 import org.sonarqube.ws.Users.CreateWsResponse;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.components.SearchProjectsRequest;
-import org.sonarqube.ws.client.permission.ApplyTemplateRequest;
 import org.sonarqube.ws.client.permission.BulkApplyTemplateRequest;
 import org.sonarqube.ws.client.permission.CreateTemplateRequest;
+import org.sonarqube.ws.client.permissions.ApplyTemplateRequest;
 import org.sonarqube.ws.client.permissions.PermissionsService;
 import org.sonarqube.ws.client.permission.UsersRequest;
 import org.sonarqube.ws.client.permissions.AddUserToTemplateRequest;
@@ -167,7 +167,7 @@ public class PermissionTemplateTest {
       .setLogin(user.getLogin())
       .setPermission("user")
       .setTemplateName(templateName));
-    serviceOld.applyTemplate(new ApplyTemplateRequest()
+    service.applyTemplate(new ApplyTemplateRequest()
       .setOrganization(organization.getKey())
       .setProjectKey(project.getKey())
       .setTemplateName(templateName));
